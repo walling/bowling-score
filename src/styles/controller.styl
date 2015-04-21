@@ -16,6 +16,14 @@
 		font-weight 300
 		font-size 1rem
 		text-align center
+		&:disabled
+			border-bottom 0
+			color mix(#a00, #fff, 30%)
+			text-shadow 0 -1px 0 mix(#000, #a00, 30%)
+		&::-moz-focus-inner
+			border 0
+		&:focus
+			outline 1px dashed #666 !important
 		&:active
 			border-bottom 0
 		&.highlighted

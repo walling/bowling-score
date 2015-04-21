@@ -256,7 +256,7 @@ var SetupController = React.createClass({displayName: "SetupController",
 		return (
 			React.createElement("section", {className: "setup controller"}, 
 				React.createElement("button", {onClick: this.addPlayerClicked}, "Add player"), 
-				React.createElement("button", {onClick: this.removePlayerClicked}, "Remove player"), 
+				React.createElement("button", {disabled: !this.props.canRemovePlayer, onClick: this.removePlayerClicked}, "Remove player"), 
 				React.createElement("button", {className: "highlighted"}, "Start game")
 			)
 		);
@@ -287,7 +287,7 @@ var App = React.createClass({displayName: "App",
 			React.createElement("section", {className: "app"}, 
 				React.createElement(Header, null), 
 				React.createElement(Scoring, {players: this.state.players}), 
-				React.createElement(SetupController, {onAddPlayer: this.addPlayer, onRemovePlayer: this.removePlayer, onStartGame: this.startGame})
+				React.createElement(SetupController, {canRemovePlayer: this.state.players.length > 1, onAddPlayer: this.addPlayer, onRemovePlayer: this.removePlayer, onStartGame: this.startGame})
 			)
 		);
 	},

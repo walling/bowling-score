@@ -10,7 +10,7 @@ var SetupController = React.createClass({
 		return (
 			<section className="setup controller">
 				<button onClick={this.addPlayerClicked}>Add player</button>
-				<button onClick={this.removePlayerClicked}>Remove player</button>
+				<button disabled={!this.props.canRemovePlayer} onClick={this.removePlayerClicked}>Remove player</button>
 				<button className="highlighted">Start game</button>
 			</section>
 		);

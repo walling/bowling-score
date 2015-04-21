@@ -14,7 +14,7 @@ var App = React.createClass({
 			<section className="app">
 				<Header/>
 				<Scoring players={this.state.players} />
-				<SetupController onAddPlayer={this.addPlayer} onRemovePlayer={this.removePlayer} onStartGame={this.startGame} />
+				<SetupController canRemovePlayer={this.state.players.length > 1} onAddPlayer={this.addPlayer} onRemovePlayer={this.removePlayer} onStartGame={this.startGame} />
 			</section>
 		);
 	},
