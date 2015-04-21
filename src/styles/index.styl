@@ -2,7 +2,9 @@
 
 body
 	background #ddd
-	padding 2rem
+	padding 0 1rem
+	@media screen and (max-width: 600px)
+		padding 0
 
 header
 	padding 1rem 0
@@ -16,9 +18,13 @@ width-points-columns = 100% - width-name-column - width-total-column
 number-of-points-columns = 20
 
 .scoring
+	max-width 960px
+	margin 0 auto
+
 	>table
 		width 100%
 		table-layout fixed
+		background #eee
 	>table th, >table td
 		width (width-points-columns / number-of-points-columns)
 		text-align center
@@ -27,13 +33,22 @@ number-of-points-columns = 20
 	>table .name
 		width width-name-column
 		text-align left
+		padding-left 0.5rem
+		overflow hidden
+		text-overflow ellipsis
+		@media screen and (max-width: 450px)
+			padding-left 0.1rem
 	>table .total
 		width width-total-column
 		text-align right
+		padding-right 0.5rem
+		@media screen and (max-width: 450px)
+			padding-right 0.1rem
 	>table .blue
-		background #ddf
+		background #cdf
 	>table .white
 		background #fff
-	>table>tbody
+	>table>thead, >table>tbody
 		border-top 3px solid #ccc
+	>table>tbody
 		border-bottom 3px solid #ccc
