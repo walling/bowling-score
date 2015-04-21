@@ -29,11 +29,11 @@ var Scoring = React.createClass({
 					</thead>
 					{tableData.map(function(scoringRowData) {
 						// Key used by React.
-						var rowId = 'scoring-row-' + scoringRowData.id;
+						var rowKey = 'scoring-row-' + scoringRowData.id;
 
 						// Create each player row in the scoring table.
 						return (
-							<ScoringRow key={rowId} data={scoringRowData} />
+							<ScoringRow key={rowKey} data={scoringRowData} />
 						);
 					})}
 				</table>

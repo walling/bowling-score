@@ -57,7 +57,7 @@ var ScoringRow = React.createClass({displayName: "ScoringRow",
 		var rowData = this.props.data;
 
 		// Key used by React.
-		var rowId = 'scoring-row-' + rowData.id;
+		var rowKey = 'scoring-row-' + rowData.id;
 
 		// Collect all the rolls for the given player. We do it this way instead of a simple
 		// `.map`, since there can be either one or two rolls in each frame, so we don't know
@@ -67,23 +67,23 @@ var ScoringRow = React.createClass({displayName: "ScoringRow",
 			var rollsData = frameData.rolls;
 
 			// Key used by React.
-			var frameId = rowId + '-frame-' + index;
+			var frameKey = rowKey + '-frame-' + index;
 
 			if (rollsData.length === 1) {
 				// If there was only one roll in this frame, we create a column with colspan=2.
 				rolls.push(
-					React.createElement("td", {key: frameId + '-roll', colSpan: "2", className: 'points ' + frameColor(index)}, rollsData[0])
+					React.createElement("td", {key: frameKey + '-roll', colSpan: "2", className: 'points ' + frameColor(index)}, rollsData[0])
 				);
 			} else if (rollsData.length === 2) {
 				// If there was two rolls in this frame, we create two columns with colspan=1.
 				rolls.push(
-					React.createElement("td", {key: frameId + '-roll-1', colSpan: "1", className: 'points ' + frameColor(index)}, rollsData[0]),
-					React.createElement("td", {key: frameId + '-roll-2', colSpan: "1", className: 'points ' + frameColor(index)}, rollsData[1])
+					React.createElement("td", {key: frameKey + '-roll-1', colSpan: "1", className: 'points ' + frameColor(index)}, rollsData[0]),
+					React.createElement("td", {key: frameKey + '-roll-2', colSpan: "1", className: 'points ' + frameColor(index)}, rollsData[1])
 				);
 			} else {
 				// Do not show any information in this frame.
 				rolls.push(
-					React.createElement("td", {key: frameId + '-roll', colSpan: "2", className: 'points ' + frameColor(index)})
+					React.createElement("td", {key: frameKey + '-roll', colSpan: "2", className: 'points ' + frameColor(index)})
 				);
 			}
 		});
@@ -99,11 +99,11 @@ var ScoringRow = React.createClass({displayName: "ScoringRow",
 				React.createElement("tr", null, 
 					rowData.frames.map(function(frameData, index) {
 						// Key used by React.
-						var frameId = rowId + '-frame-' + index;
+						var frameKey = rowKey + '-frame-' + index;
 
 						// Insert the number of points in each frame.
 						return (
-							React.createElement("td", {key: frameId, colSpan: "2", className: 'points ' + frameColor(index)}, frameData.points)
+							React.createElement("td", {key: frameKey, colSpan: "2", className: 'points ' + frameColor(index)}, frameData.points)
 						);
 					})
 				)
@@ -143,11 +143,11 @@ var Scoring = React.createClass({displayName: "Scoring",
 					), 
 					tableData.map(function(scoringRowData) {
 						// Key used by React.
-						var rowId = 'scoring-row-' + scoringRowData.id;
+						var rowKey = 'scoring-row-' + scoringRowData.id;
 
 						// Create each player row in the scoring table.
 						return (
-							React.createElement(ScoringRow, {key: rowId, data: scoringRowData})
+							React.createElement(ScoringRow, {key: rowKey, data: scoringRowData})
 						);
 					})
 				)
