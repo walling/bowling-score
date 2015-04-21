@@ -114,10 +114,10 @@ var ScoringRow = React.createClass({displayName: "ScoringRow",
 					this.state.editingName
 						// Either show inline editing of name using input element.
 						? React.createElement("td", {className: "edit name", rowSpan: "2"}, 
-								React.createElement("input", {type: "text", ref: "nameInput", autoFocus: true, placeholder: this.placeholderName(this.props.playerId), defaultValue: this.state.name, onBlur: this.editNameBlur, onKeyDown: this.editNameKey})
+								React.createElement("input", {type: "text", ref: "nameInput", autoFocus: true, placeholder: this.placeholderName(this.props.playerId), defaultValue: this.props.name, onBlur: this.editNameBlur, onKeyDown: this.editNameKey})
 							)
 						// Otherwise just show the name (or the default placeholder name, if unnamed).
-						: React.createElement("td", {ref: "name", className: "name", rowSpan: "2", tabIndex: "0", onClick: this.nameClicked, onKeyDown: this.nameKey}, this.state.name || this.placeholderName(this.props.playerId)), 
+						: React.createElement("td", {ref: "name", className: "name", rowSpan: "2", tabIndex: "0", onClick: this.nameClicked, onKeyDown: this.nameKey}, this.props.name || this.placeholderName(this.props.playerId)), 
 					
 
 					rolls, /* display the rolls columns as calculated above */
@@ -146,7 +146,6 @@ var ScoringRow = React.createClass({displayName: "ScoringRow",
 	 */
 	getInitialState: function() {
 		return {
-			name: '',
 			editingName: true
 		};
 	},
@@ -181,15 +180,16 @@ var ScoringRow = React.createClass({displayName: "ScoringRow",
 	 * Helper method to deactivate editing of the name.
 	 */
 	stopEditingName: function(keepFocus, newName) {
-		// Create new state where editing is disabled.
-		var newState = { editingName: false };
-
-		// Update name, if given. If not given, the name is not updated, ie. it reverts back to old name.
-		if (newName !== undefined) {
-			newState.name = newName.trim();
+		// Report new name, if given. If not given, the name is not updated, ie. it reverts back to old name.
+		if (newName !== undefined && this.props.onNameChange) {
+			this.props.onNameChange({
+				playerId: this.props.playerId,
+				name: newName
+			});
 		}
 
-		this.setState(newState, function() {
+		// Disable editing.
+		this.setState({ editingName: false }, function() {
 			// Select focus of the current player as requested, when the view updated.
 			if (keepFocus) {
 				React.findDOMNode(this.refs.name).focus();
@@ -257,6 +257,8 @@ var Scoring = React.createClass({displayName: "Scoring",
 	 * Renders this view.
 	 */
 	render: function() {
+		var self = this;
+
 		return (
 			React.createElement("section", {className: "scoring"}, 
 				React.createElement("table", null, 
@@ -281,13 +283,25 @@ var Scoring = React.createClass({displayName: "Scoring",
 
 						// Create each player row in the scoring table.
 						return (
-							React.createElement(ScoringRow, {key: rowKey, playerId: playerId, frames: player.frames})
+							React.createElement(ScoringRow, {key: rowKey, playerId: playerId, frames: player.frames, name: player.name, onNameChange: self.nameChanged})
 						);
 					})
 
 				)
 			)
 		);
+	},
+
+	/**
+	 * Event when player name changed. Forward the information to parent view.
+	 */
+	nameChanged: function(player) {
+		if (this.props.onNameChange) {
+			this.props.onNameChange({
+				index: player.playerId - 1,
+				name: player.name
+			});
+		}
 	}
 
 });
@@ -355,7 +369,7 @@ var App = React.createClass({displayName: "App",
 		return (
 			React.createElement("section", {className: "app"}, 
 				React.createElement(Header, null), 
-				React.createElement(Scoring, {players: this.state.players}), 
+				React.createElement(Scoring, {players: this.state.players, onNameChange: this.nameChanged}), 
 				React.createElement(SetupController, {canAddPlayer: this.canAddPlayer(), canRemovePlayer: this.canRemovePlayer(), onAddPlayer: this.addPlayer, onRemovePlayer: this.removePlayer, onStartGame: this.startGame})
 			)
 		);
@@ -366,8 +380,15 @@ var App = React.createClass({displayName: "App",
 	 */
 	getInitialState: function() {
 		return {
-			players: [ { frames: [] } ]
+			players: [ this.newUnnamedPlayer() ]
 		};
+	},
+
+	/**
+	 * Create state for a new unnamed player.
+	 */
+	newUnnamedPlayer: function() {
+		return { frames: [], name: '' };
 	},
 
 	/**
@@ -387,11 +408,19 @@ var App = React.createClass({displayName: "App",
 	},
 
 	/**
+	 * Event when name is changed for a player.
+	 */
+	nameChanged: function(player) {
+		this.state.players[player.index].name = player.name;
+		this.setState({ players: this.state.players });
+	},
+
+	/**
 	 * Event when add player is clicked. Adds another player to the list.
 	 */
 	addPlayer: function() {
 		if (this.canAddPlayer()) {
-			var players = this.state.players.concat([ { frames: [] } ]);
+			var players = this.state.players.concat([ this.newUnnamedPlayer() ]);
 			this.setState({ players: players });
 		}
 	},

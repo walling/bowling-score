@@ -17,7 +17,7 @@ var App = React.createClass({
 		return (
 			<section className="app">
 				<Header/>
-				<Scoring players={this.state.players} />
+				<Scoring players={this.state.players} onNameChange={this.nameChanged} />
 				<SetupController canAddPlayer={this.canAddPlayer()} canRemovePlayer={this.canRemovePlayer()} onAddPlayer={this.addPlayer} onRemovePlayer={this.removePlayer} onStartGame={this.startGame} />
 			</section>
 		);
@@ -28,8 +28,15 @@ var App = React.createClass({
 	 */
 	getInitialState: function() {
 		return {
-			players: [ { frames: [] } ]
+			players: [ this.newUnnamedPlayer() ]
 		};
+	},
+
+	/**
+	 * Create state for a new unnamed player.
+	 */
+	newUnnamedPlayer: function() {
+		return { frames: [], name: '' };
 	},
 
 	/**
@@ -49,11 +56,19 @@ var App = React.createClass({
 	},
 
 	/**
+	 * Event when name is changed for a player.
+	 */
+	nameChanged: function(player) {
+		this.state.players[player.index].name = player.name;
+		this.setState({ players: this.state.players });
+	},
+
+	/**
 	 * Event when add player is clicked. Adds another player to the list.
 	 */
 	addPlayer: function() {
 		if (this.canAddPlayer()) {
-			var players = this.state.players.concat([ { frames: [] } ]);
+			var players = this.state.players.concat([ this.newUnnamedPlayer() ]);
 			this.setState({ players: players });
 		}
 	},

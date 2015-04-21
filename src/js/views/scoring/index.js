@@ -12,6 +12,8 @@ var Scoring = React.createClass({
 	 * Renders this view.
 	 */
 	render: function() {
+		var self = this;
+
 		return (
 			<section className="scoring">
 				<table>
@@ -36,13 +38,25 @@ var Scoring = React.createClass({
 
 						// Create each player row in the scoring table.
 						return (
-							<ScoringRow key={rowKey} playerId={playerId} frames={player.frames} />
+							<ScoringRow key={rowKey} playerId={playerId} frames={player.frames} name={player.name} onNameChange={self.nameChanged} />
 						);
 					})}
 
 				</table>
 			</section>
 		);
+	},
+
+	/**
+	 * Event when player name changed. Forward the information to parent view.
+	 */
+	nameChanged: function(player) {
+		if (this.props.onNameChange) {
+			this.props.onNameChange({
+				index: player.playerId - 1,
+				name: player.name
+			});
+		}
 	}
 
 });

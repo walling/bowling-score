@@ -69,10 +69,10 @@ var ScoringRow = React.createClass({
 					{this.state.editingName
 						// Either show inline editing of name using input element.
 						? <td className="edit name" rowSpan="2">
-								<input type="text" ref="nameInput" autoFocus placeholder={this.placeholderName(this.props.playerId)} defaultValue={this.state.name} onBlur={this.editNameBlur} onKeyDown={this.editNameKey} />
+								<input type="text" ref="nameInput" autoFocus placeholder={this.placeholderName(this.props.playerId)} defaultValue={this.props.name} onBlur={this.editNameBlur} onKeyDown={this.editNameKey} />
 							</td>
 						// Otherwise just show the name (or the default placeholder name, if unnamed).
-						: <td ref="name" className="name" rowSpan="2" tabIndex="0" onClick={this.nameClicked} onKeyDown={this.nameKey}>{this.state.name || this.placeholderName(this.props.playerId)}</td>
+						: <td ref="name" className="name" rowSpan="2" tabIndex="0" onClick={this.nameClicked} onKeyDown={this.nameKey}>{this.props.name || this.placeholderName(this.props.playerId)}</td>
 					}
 
 					{rolls /* display the rolls columns as calculated above */}
@@ -101,7 +101,6 @@ var ScoringRow = React.createClass({
 	 */
 	getInitialState: function() {
 		return {
-			name: '',
 			editingName: true
 		};
 	},
@@ -136,15 +135,16 @@ var ScoringRow = React.createClass({
 	 * Helper method to deactivate editing of the name.
 	 */
 	stopEditingName: function(keepFocus, newName) {
-		// Create new state where editing is disabled.
-		var newState = { editingName: false };
-
-		// Update name, if given. If not given, the name is not updated, ie. it reverts back to old name.
-		if (newName !== undefined) {
-			newState.name = newName.trim();
+		// Report new name, if given. If not given, the name is not updated, ie. it reverts back to old name.
+		if (newName !== undefined && this.props.onNameChange) {
+			this.props.onNameChange({
+				playerId: this.props.playerId,
+				name: newName
+			});
 		}
 
-		this.setState(newState, function() {
+		// Disable editing.
+		this.setState({ editingName: false }, function() {
 			// Select focus of the current player as requested, when the view updated.
 			if (keepFocus) {
 				React.findDOMNode(this.refs.name).focus();
