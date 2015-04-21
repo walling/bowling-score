@@ -6,6 +6,10 @@ var React = require('react');
  * View for the controller.
  */
 var SetupController = React.createClass({
+
+	/**
+	 * Renders this view. The Remove Player button is disabled if no players can be removed.
+	 */
 	render: function() {
 		return (
 			<section className="setup controller">
@@ -16,15 +20,22 @@ var SetupController = React.createClass({
 		);
 	},
 
+	/**
+	 * Event when Add Player button is clicked.
+	 */
 	addPlayerClicked: function(event) {
 		event.preventDefault();
 		this.props.onAddPlayer();
 	},
 
+	/**
+	 * Event when Remove Player button is clicked.
+	 */
 	removePlayerClicked: function(event) {
 		event.preventDefault();
 		this.props.onRemovePlayer();
 	}
+
 });
 
 module.exports = SetupController;

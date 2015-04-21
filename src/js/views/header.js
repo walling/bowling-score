@@ -6,6 +6,10 @@ var React = require('react');
  * View for the app header/title.
  */
 var Header = React.createClass({
+
+	/**
+	 * Renders this view.
+	 */
 	render: function() {
 		return (
 			<header>
@@ -13,6 +17,7 @@ var Header = React.createClass({
 			</header>
 		);
 	}
+
 });
 
 module.exports = Header;

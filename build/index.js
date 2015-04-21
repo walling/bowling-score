@@ -18,6 +18,10 @@ var React = __small$_mod_0;
  * View for the app header/title.
  */
 var Header = React.createClass({displayName: "Header",
+
+	/**
+	 * Renders this view.
+	 */
 	render: function() {
 		return (
 			React.createElement("header", null, 
@@ -25,6 +29,7 @@ var Header = React.createClass({displayName: "Header",
 			)
 		);
 	}
+
 });
 
 exports = Header;
@@ -42,28 +47,25 @@ var exports = {};
 
 var React = __small$_mod_0;
 
-/**
- * Creates alternating color for each frame.
- */
-function frameColor(index) {
-	return (index % 2 === 0) ? 'blue' : 'white';
-}
-
-/**
- * Default name for a given player.
- */
-function placeholderName(id) {
-	return 'Player ' + id;
-}
+// Key codes used in keyDown event.
+var ENTER_KEY = 13;
+var ESCAPE_KEY = 27;
 
 /**
  * View for one row in the scoring table representing a single player.
  */
 var ScoringRow = React.createClass({displayName: "ScoringRow",
-	render: function() {
-		// Key used by React.
-		var rowKey = 'scoring-row-' + this.props.playerId;
 
+	/**
+	 * Renders this view.
+	 */
+	render: function() {
+		var self = this;
+		var rowKey = 'scoring-row-' + this.props.playerId; // key used by React
+
+		// Calculate points for all frames as well as total.
+		// TODO: Move this out in seperate module for application logic.
+		var total = 0;
 		var framesData = [];
 		for (var index = 0; index < 10; index++) {
 			framesData[index] = {
@@ -74,18 +76,17 @@ var ScoringRow = React.createClass({displayName: "ScoringRow",
 
 		// Collect all the rolls for the given player. We do it this way instead of a simple
 		// `.map`, since there can be either one or two rolls in each frame, so we don't know
-		// the exact number of output columns beforehand.
+		// the exact number of output columns in the table beforehand.
+		// TODO: Calculate rolls in application logic to keep view logic simpler.
 		var rolls = [];
 		framesData.forEach(function(frameData, index) {
 			var rollsData = frameData.rolls;
-
-			// Key used by React.
-			var frameKey = rowKey + '-frame-' + index;
+			var frameKey = rowKey + '-frame-' + index; // key used by React
 
 			if (rollsData.length === 1) {
 				// If there was only one roll in this frame, it must be a strike.
 				rolls.push(
-					React.createElement("td", {key: frameKey + '-roll', colSpan: "2", className: 'points rolls strike ' + frameColor(index)}, "×")
+					React.createElement("td", {key: frameKey + '-roll', colSpan: "2", className: 'points rolls strike ' + self.frameColor(index)}, "×")
 				);
 
 			} else if (rollsData.length === 2) {
@@ -94,14 +95,14 @@ var ScoringRow = React.createClass({displayName: "ScoringRow",
 
 				// If there was two rolls in this frame, we create two columns with colspan=1.
 				rolls.push(
-					React.createElement("td", {key: frameKey + '-roll-1', colSpan: "1", className: 'points rolls ' + frameColor(index)}, rollsData[0]),
-					React.createElement("td", {key: frameKey + '-roll-2', colSpan: "1", className: 'points rolls ' + spare + ' ' + frameColor(index)}, spare ? '/' : rollsData[1])
+					React.createElement("td", {key: frameKey + '-roll-1', colSpan: "1", className: 'points rolls ' + self.frameColor(index)}, rollsData[0]),
+					React.createElement("td", {key: frameKey + '-roll-2', colSpan: "1", className: 'points rolls ' + spare + ' ' + self.frameColor(index)}, spare ? '/' : rollsData[1])
 				);
 
 			} else {
 				// Do not show any information in this frame.
 				rolls.push(
-					React.createElement("td", {key: frameKey + '-roll', colSpan: "2", className: 'points rolls ' + frameColor(index)}, " ")
+					React.createElement("td", {key: frameKey + '-roll', colSpan: "2", className: 'points rolls ' + self.frameColor(index)}, " ")
 				);
 			}
 		});
@@ -110,87 +111,136 @@ var ScoringRow = React.createClass({displayName: "ScoringRow",
 		return (
 			React.createElement("tbody", null, 
 				React.createElement("tr", null, 
-					this.state.editName
+					this.state.editingName
+						// Either show inline editing of name using input element.
 						? React.createElement("td", {className: "edit name", rowSpan: "2"}, 
-								React.createElement("input", {type: "text", ref: "nameInput", autoFocus: true, placeholder: placeholderName(this.props.playerId), defaultValue: this.state.name, onBlur: this.editNameBlur, onKeyDown: this.editNameKey})
+								React.createElement("input", {type: "text", ref: "nameInput", autoFocus: true, placeholder: this.placeholderName(this.props.playerId), defaultValue: this.state.name, onBlur: this.editNameBlur, onKeyDown: this.editNameKey})
 							)
-						: React.createElement("td", {ref: "name", className: "name", rowSpan: "2", tabIndex: "0", onClick: this.nameClicked, onKeyDown: this.nameKey}, this.state.name || placeholderName(this.props.playerId)), 
+						// Otherwise just show the name (or the default placeholder name, if unnamed).
+						: React.createElement("td", {ref: "name", className: "name", rowSpan: "2", tabIndex: "0", onClick: this.nameClicked, onKeyDown: this.nameKey}, this.state.name || this.placeholderName(this.props.playerId)), 
 					
-					rolls, 
+
+					rolls, /* display the rolls columns as calculated above */
+
 					React.createElement("td", {className: "total", rowSpan: "2"}, "42")
 				), 
 				React.createElement("tr", null, 
-					framesData.map(function(frameData, index) {
-						// Key used by React.
-						var frameKey = rowKey + '-frame-' + index;
 
-						// Insert the number of points in each frame.
+					framesData.map(function(frameData, index) {
+						var frameKey = rowKey + '-frame-' + index; // key used by React
+						var text = frameData.points || '\u00A0'; // show non-breaking space if no data
+
+						// Insert the number of points for each frame.
 						return (
-							React.createElement("td", {key: frameKey, colSpan: "2", className: 'points frame ' + frameColor(index)}, frameData.points || '\u00A0')
+							React.createElement("td", {key: frameKey, colSpan: "2", className: 'points frame ' + self.frameColor(index)}, text)
 						);
 					})
+
 				)
 			)
 		);
 	},
 
+	/**
+	 * The initial state is an unnamed player and editing the name is actived.
+	 */
 	getInitialState: function() {
 		return {
 			name: '',
-			editName: true
+			editingName: true
 		};
 	},
 
+	/**
+	 * Creates alternating color for each frame.
+	 */
+	frameColor: function(index) {
+		return (index % 2 === 0) ? 'blue' : 'white';
+	},
+
+	/**
+	 * Default name for a given player.
+	 */
+	placeholderName: function(id) {
+		return 'Player ' + id;
+	},
+
+	/**
+	 * Helper method to activate editing of the name.
+	 */
 	startEditingName: function() {
-		this.setState({ editName: true }, function() {
+		this.setState({ editingName: true }, function() {
+			// When the view updated, select the content and set focus.
 			var inputElement = React.findDOMNode(this.refs.nameInput);
 			inputElement.select();
 			inputElement.focus();
 		});
 	},
 
+	/**
+	 * Helper method to deactivate editing of the name.
+	 */
 	stopEditingName: function(keepFocus, newName) {
-		var newState = { editName: false };
+		// Create new state where editing is disabled.
+		var newState = { editingName: false };
+
+		// Update name, if given. If not given, the name is not updated, ie. it reverts back to old name.
 		if (newName !== undefined) {
 			newState.name = newName.trim();
 		}
+
 		this.setState(newState, function() {
+			// Select focus of the current player as requested, when the view updated.
 			if (keepFocus) {
 				React.findDOMNode(this.refs.name).focus();
 			}
 		});
 	},
 
+	/**
+	 * Event when player name is clicked. This starts editing.
+	 */
 	nameClicked: function(event) {
 		event.preventDefault();
 		this.startEditingName();
 	},
 
+	/**
+	 * Event when key is pressed down on player name. Checks for enter key, which simulates a click to start editing.
+	 */
 	nameKey: function(event) {
-		if (event.which === 13) {
+		if (event.which === ENTER_KEY) {
 			event.preventDefault();
 			this.startEditingName();
 		}
 	},
 
+	/**
+	 * Event when focus leaves the name editing field. This stops editing.
+	 */
 	editNameBlur: function(event) {
 		event.preventDefault();
 		this.stopEditingName(false, React.findDOMNode(this.refs.nameInput).value);
 	},
 
+	/**
+	 * Event when key is pressed down in name editing field:
+	 *
+	 *  - Escape key cancels the edit and reverts back to the old name.
+	 *  - Enter key accepts the edit and saves the new name.
+	 */
 	editNameKey: function(event) {
-		var data = this.props.data;
-
-		if (event.which === 27) {
+		if (event.which === ESCAPE_KEY) {
 			// Escape key: Cancel editing.
 			event.preventDefault();
 			this.stopEditingName(true); // not specifying name reverts to old name
-		} else if (event.which === 13) {
+		} else if (event.which === ENTER_KEY) {
 			// Enter key: Accept new name.
 			event.preventDefault();
 			this.stopEditingName(true, React.findDOMNode(this.refs.nameInput).value);
 		}
 	}
+
 });
 
 exports = ScoringRow;
@@ -202,9 +252,11 @@ return exports;
  * View with the whole scoring table.
  */
 var Scoring = React.createClass({displayName: "Scoring",
-	render: function() {
-		var playersData = this.props.players;
 
+	/**
+	 * Renders this view.
+	 */
+	render: function() {
 		return (
 			React.createElement("section", {className: "scoring"}, 
 				React.createElement("table", null, 
@@ -222,20 +274,22 @@ var Scoring = React.createClass({displayName: "Scoring",
 						React.createElement("th", {colSpan: "2", className: "points white"}, "10"), 
 						React.createElement("th", {className: "total"}, "Total")
 					), 
-					playersData.map(function(playerData, index) {
-						// Key used by React.
+
+					this.props.players.map(function(player, index) {
+						var rowKey = 'scoring-' + index; // key used by React
 						var playerId = index + 1;
-						var rowKey = 'scoring-row-' + playerId;
 
 						// Create each player row in the scoring table.
 						return (
-							React.createElement(ScoringRow, {key: rowKey, playerId: playerId, frames: playerData.frames})
+							React.createElement(ScoringRow, {key: rowKey, playerId: playerId, frames: player.frames})
 						);
 					})
+
 				)
 			)
 		);
 	}
+
 });
 
 exports = Scoring;
@@ -252,6 +306,10 @@ var React = __small$_mod_0;
  * View for the controller.
  */
 var SetupController = React.createClass({displayName: "SetupController",
+
+	/**
+	 * Renders this view. The Remove Player button is disabled if no players can be removed.
+	 */
 	render: function() {
 		return (
 			React.createElement("section", {className: "setup controller"}, 
@@ -262,15 +320,22 @@ var SetupController = React.createClass({displayName: "SetupController",
 		);
 	},
 
+	/**
+	 * Event when Add Player button is clicked.
+	 */
 	addPlayerClicked: function(event) {
 		event.preventDefault();
 		this.props.onAddPlayer();
 	},
 
+	/**
+	 * Event when Remove Player button is clicked.
+	 */
 	removePlayerClicked: function(event) {
 		event.preventDefault();
 		this.props.onRemovePlayer();
 	}
+
 });
 
 exports = SetupController;
@@ -282,30 +347,51 @@ return exports;
  * View for the app.
  */
 var App = React.createClass({displayName: "App",
+
+	/**
+	 * Renders this view.
+	 */
 	render: function() {
 		return (
 			React.createElement("section", {className: "app"}, 
 				React.createElement(Header, null), 
 				React.createElement(Scoring, {players: this.state.players}), 
-				React.createElement(SetupController, {canRemovePlayer: this.state.players.length > 1, onAddPlayer: this.addPlayer, onRemovePlayer: this.removePlayer, onStartGame: this.startGame})
+				React.createElement(SetupController, {canRemovePlayer: this.canRemovePlayer(), onAddPlayer: this.addPlayer, onRemovePlayer: this.removePlayer, onStartGame: this.startGame})
 			)
 		);
 	},
 
+	/**
+	 * Initial state of the app is just a single unnamed player.
+	 */
 	getInitialState: function() {
-		// Begin with just a single unnamed player.
 		return {
 			players: [ { frames: [] } ]
 		};
 	},
 
+	/**
+	 * Returns true if more players can be removed from the list.
+	 * Ensures that there are at least one player left.
+	 */
+	canRemovePlayer: function() {
+		return (this.state.players.length > 1);
+	},
+
+	/**
+	 * Event when add player is clicked. Adds another player to the list.
+	 */
 	addPlayer: function() {
 		this.state.players.push({ frames: [] });
 		this.setState({ players: this.state.players });
 	},
 
+	/**
+	 * Event when remove player is clicked. Removes the last player
+	 * from the list, except when there is only one player left.
+	 */
 	removePlayer: function() {
-		if (this.state.players.length > 1) {
+		if (this.canRemovePlayer()) {
 			this.state.players.pop();
 			this.setState({ players: this.state.players });
 		}
@@ -319,10 +405,7 @@ return exports;
 })());
 
 // Render the app.
-React.render(
-	React.createElement(App, null),
-	document.body
-);
+React.render(React.createElement(App, null), document.body);
 
 return exports;
 })(window.React);; }());
