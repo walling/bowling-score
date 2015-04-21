@@ -14,3 +14,19 @@ Implementation:
   - [ ] _two_ extra rolls for a strike.
 - [ ] Visualize the scoring of the game.
 - [ ] Create a method that randomly throws a roll (one roll is 1-10 pins knocked down), and progresses the scoring.
+
+## Running
+
+The build folder is added to the git repository, so you can just open `build/index.html` in your browser.
+
+## Building
+
+Ensure that you have Node.js/io.js installed and [Gulp](http://gulpjs.com) client (`npm install -g gulp`). To build the project, just execute:
+
+```bash
+npm install
+gulp build
+# look in the build/ directory.
+```
+
+If you want the project to be built continuously, just execute `gulp` without any arguments. It runs gulp in watch mode.
