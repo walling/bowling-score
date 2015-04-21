@@ -21,6 +21,7 @@
   "homepage": "https://github.com/walling/bowling-score",
   "devDependencies": {
     "gulp": "^3.8.11",
-    "gulp-htmlmin": "^1.1.1"
+    "gulp-htmlmin": "^1.1.1",
+    "gulp-stylus": "^2.0.1"
   }
 }
