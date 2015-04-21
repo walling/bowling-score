@@ -10,8 +10,8 @@ function createTestFrames() {
 	var frames = [];
 	for (var i = 1; i <= 10; i++) {
 		frames.push({
-			rolls: Math.random() > 0.5 ? [3, 4] : [7],
-			points: 7
+			rolls: Math.random() > 0.5 ? [3, 7] : [10],
+			points: 10
 		});
 	}
 	return frames;

@@ -19,6 +19,7 @@ number-of-points-columns = 20
 		text-align center
 		vertical-align middle
 		height 2rem
+		line-height 2rem
 	>table .name
 		width width-name-column
 		text-align left
@@ -36,6 +37,14 @@ number-of-points-columns = 20
 	>table .rolls
 		font-size 80%
 		color #333
+		&.strike
+			font-size 150%
+			font-weight 900
+			color rgba(170,0,0,0.7)
+		&.spare
+			font-size 90%
+			font-weight 900
+			color #a00
 	>table .blue
 		background darken(#cdf, 2%)
 		&.rolls

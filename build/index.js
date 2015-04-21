@@ -70,16 +70,21 @@ var ScoringRow = React.createClass({displayName: "ScoringRow",
 			var frameKey = rowKey + '-frame-' + index;
 
 			if (rollsData.length === 1) {
-				// If there was only one roll in this frame, we create a column with colspan=2.
+				// If there was only one roll in this frame, it must be a strike.
 				rolls.push(
-					React.createElement("td", {key: frameKey + '-roll', colSpan: "2", className: 'points rolls ' + frameColor(index)}, rollsData[0])
+					React.createElement("td", {key: frameKey + '-roll', colSpan: "2", className: 'points rolls strike ' + frameColor(index)}, "×")
 				);
+
 			} else if (rollsData.length === 2) {
+				// We insert class name 'spare' if the total number of pins knocked down is 10.
+				var spare = ((rollsData[0] | 0) + (rollsData[1] | 0) === 10) ? 'spare ' : '';
+
 				// If there was two rolls in this frame, we create two columns with colspan=1.
 				rolls.push(
 					React.createElement("td", {key: frameKey + '-roll-1', colSpan: "1", className: 'points rolls ' + frameColor(index)}, rollsData[0]),
-					React.createElement("td", {key: frameKey + '-roll-2', colSpan: "1", className: 'points rolls ' + frameColor(index)}, rollsData[1])
+					React.createElement("td", {key: frameKey + '-roll-2', colSpan: "1", className: 'points rolls ' + spare + ' ' + frameColor(index)}, spare ? '/' : rollsData[1])
 				);
+
 			} else {
 				// Do not show any information in this frame.
 				rolls.push(
@@ -187,8 +192,8 @@ function createTestFrames() {
 	var frames = [];
 	for (var i = 1; i <= 10; i++) {
 		frames.push({
-			rolls: Math.random() > 0.5 ? [3, 4] : [7],
-			points: 7
+			rolls: Math.random() > 0.5 ? [3, 7] : [10],
+			points: 10
 		});
 	}
 	return frames;
