@@ -88,7 +88,7 @@ var ScoringRow = React.createClass({displayName: "ScoringRow",
 			} else {
 				// Do not show any information in this frame.
 				rolls.push(
-					React.createElement("td", {key: frameKey + '-roll', colSpan: "2", className: 'points rolls ' + frameColor(index)})
+					React.createElement("td", {key: frameKey + '-roll', colSpan: "2", className: 'points rolls ' + frameColor(index)}, " ")
 				);
 			}
 		});
@@ -108,7 +108,7 @@ var ScoringRow = React.createClass({displayName: "ScoringRow",
 
 						// Insert the number of points in each frame.
 						return (
-							React.createElement("td", {key: frameKey, colSpan: "2", className: 'points frame ' + frameColor(index)}, frameData.points)
+							React.createElement("td", {key: frameKey, colSpan: "2", className: 'points frame ' + frameColor(index)}, frameData.points || '\u00A0')
 						);
 					})
 				)
