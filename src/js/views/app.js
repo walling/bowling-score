@@ -4,6 +4,9 @@ var React = require('react');
 var Header = require('./header');
 var Scoring = require('./scoring');
 
+/**
+ * View for the app.
+ */
 var App = React.createClass({
 	render: function() {
 		return (

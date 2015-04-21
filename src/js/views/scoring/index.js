@@ -3,9 +3,12 @@
 var React = require('react');
 var ScoringRow = require('./row');
 
+/**
+ * View with the whole scoring table.
+ */
 var Scoring = React.createClass({
 	render: function() {
-		var data = this.props.data;
+		var tableData = this.props.data;
 
 		return (
 			<section className="scoring">
@@ -24,9 +27,11 @@ var Scoring = React.createClass({
 						<th colSpan="2" className="points white">10</th>
 						<th className="total">Total</th>
 					</thead>
-					{data.map(function(scoringRowData) {
+					{tableData.map(function(scoringRowData) {
+						// Key used by React.
 						var rowId = 'scoring-row-' + scoringRowData.id;
 
+						// Create each player row in the scoring table.
 						return (
 							<ScoringRow key={rowId} data={scoringRowData} />
 						);

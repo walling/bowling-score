@@ -14,6 +14,9 @@ var exports = {};
 
 var React = __small$_mod_0;
 
+/**
+ * View for the app header/title.
+ */
 var Header = React.createClass({displayName: "Header",
 	render: function() {
 		return (
@@ -39,41 +42,68 @@ var exports = {};
 
 var React = __small$_mod_0;
 
+/**
+ * Creates alternating color for each frame.
+ */
+function frameColor(index) {
+	return (index % 2 === 0) ? 'blue' : 'white';
+}
+
+/**
+ * View for one row in the scoring table representing a single player.
+ */
 var ScoringRow = React.createClass({displayName: "ScoringRow",
 	render: function() {
-		var data = this.props.data;
-		var rowId = 'scoring-row-' + data.id;
+		var rowData = this.props.data;
 
+		// Key used by React.
+		var rowId = 'scoring-row-' + rowData.id;
+
+		// Collect all the rolls for the given player. We do it this way instead of a simple
+		// `.map`, since there can be either one or two rolls in each frame, so we don't know
+		// the exact number of output columns beforehand.
 		var rolls = [];
-		data.frames.forEach(function(frameData) {
-			var frameId = rowId + '-frame-' + frameData.id;
+		rowData.frames.forEach(function(frameData, index) {
 			var rollsData = frameData.rolls;
 
+			// Key used by React.
+			var frameId = rowId + '-frame-' + index;
+
 			if (rollsData.length === 1) {
+				// If there was only one roll in this frame, we create a column with colspan=2.
 				rolls.push(
-					React.createElement("td", {key: frameId + '-roll-1', colSpan: "2", className: 'points ' + frameData.color}, rollsData[0])
+					React.createElement("td", {key: frameId + '-roll', colSpan: "2", className: 'points ' + frameColor(index)}, rollsData[0])
 				);
 			} else if (rollsData.length === 2) {
+				// If there was two rolls in this frame, we create two columns with colspan=1.
 				rolls.push(
-					React.createElement("td", {key: frameId + '-roll-1', colSpan: "1", className: 'points ' + frameData.color}, rollsData[0]),
-					React.createElement("td", {key: frameId + '-roll-2', colSpan: "1", className: 'points ' + frameData.color}, rollsData[1])
+					React.createElement("td", {key: frameId + '-roll-1', colSpan: "1", className: 'points ' + frameColor(index)}, rollsData[0]),
+					React.createElement("td", {key: frameId + '-roll-2', colSpan: "1", className: 'points ' + frameColor(index)}, rollsData[1])
+				);
+			} else {
+				// Do not show any information in this frame.
+				rolls.push(
+					React.createElement("td", {key: frameId + '-roll', colSpan: "2", className: 'points ' + frameColor(index)})
 				);
 			}
 		});
 
+		// View for one row (ie. one player) in the scoring table.
 		return (
 			React.createElement("tbody", null, 
 				React.createElement("tr", null, 
-					React.createElement("td", {className: "name", rowSpan: "2"}, data.name), 
+					React.createElement("td", {className: "name", rowSpan: "2"}, rowData.name), 
 					rolls, 
-					React.createElement("td", {className: "total", rowSpan: "2"}, data.total)
+					React.createElement("td", {className: "total", rowSpan: "2"}, rowData.total)
 				), 
 				React.createElement("tr", null, 
-					data.frames.map(function(frameData) {
-						var frameId = rowId + '-frame-' + frameData.id;
+					rowData.frames.map(function(frameData, index) {
+						// Key used by React.
+						var frameId = rowId + '-frame-' + index;
 
+						// Insert the number of points in each frame.
 						return (
-							React.createElement("td", {key: frameId, colSpan: "2", className: 'points ' + frameData.color}, frameData.points)
+							React.createElement("td", {key: frameId, colSpan: "2", className: 'points ' + frameColor(index)}, frameData.points)
 						);
 					})
 				)
@@ -87,9 +117,12 @@ exports = ScoringRow;
 return exports;
 })());
 
+/**
+ * View with the whole scoring table.
+ */
 var Scoring = React.createClass({displayName: "Scoring",
 	render: function() {
-		var data = this.props.data;
+		var tableData = this.props.data;
 
 		return (
 			React.createElement("section", {className: "scoring"}, 
@@ -108,9 +141,11 @@ var Scoring = React.createClass({displayName: "Scoring",
 						React.createElement("th", {colSpan: "2", className: "points white"}, "10"), 
 						React.createElement("th", {className: "total"}, "Total")
 					), 
-					data.map(function(scoringRowData) {
+					tableData.map(function(scoringRowData) {
+						// Key used by React.
 						var rowId = 'scoring-row-' + scoringRowData.id;
 
+						// Create each player row in the scoring table.
 						return (
 							React.createElement(ScoringRow, {key: rowId, data: scoringRowData})
 						);
@@ -126,6 +161,9 @@ exports = Scoring;
 return exports;
 })());
 
+/**
+ * View for the app.
+ */
 var App = React.createClass({displayName: "App",
 	render: function() {
 		return (
@@ -142,12 +180,13 @@ exports = App;
 return exports;
 })());
 
-function createFrames() {
+/**
+ * Creates test data with frames for a given player.
+ */
+function createTestFrames() {
 	var frames = [];
 	for (var i = 1; i <= 10; i++) {
 		frames.push({
-			id: i,
-			color: (i % 2 === 1) ? 'blue' : 'white',
 			rolls: Math.random() > 0.5 ? [3, 4] : [7],
 			points: 7
 		});
@@ -155,12 +194,14 @@ function createFrames() {
 	return frames;
 }
 
+// Mock-up data with three players.
 var scoringTableData = [
-	{ id: 1, name: 'David', frames: createFrames(), total: 70 },
-	{ id: 2, name: 'Dennis', frames: createFrames(), total: 70 },
-	{ id: 3, name: 'Diane', frames: createFrames(), total: 70 }
+	{ id: 1, name: 'David', frames: createTestFrames(), total: 70 },
+	{ id: 2, name: 'Dennis', frames: createTestFrames(), total: 70 },
+	{ id: 3, name: 'Diane', frames: createTestFrames(), total: 70 }
 ];
 
+// Render the app.
 React.render(
 	React.createElement(App, {scoringTableData: scoringTableData}),
 	document.body

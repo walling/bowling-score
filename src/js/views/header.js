@@ -2,6 +2,9 @@
 
 var React = require('react');
 
+/**
+ * View for the app header/title.
+ */
 var Header = React.createClass({
 	render: function() {
 		return (
