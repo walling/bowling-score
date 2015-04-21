@@ -33,10 +33,17 @@ number-of-points-columns = 20
 		padding-right 0.5rem
 		@media screen and (max-width: 450px)
 			padding-right 0.1rem
+	>table .rolls
+		font-size 80%
+		color #333
 	>table .blue
-		background #cdf
+		background darken(#cdf, 2%)
+		&.rolls
+			background #cdf
 	>table .white
-		background #fff
+		background darken(#fff, 2%)
+		&.rolls
+			background #fff
 	>table>thead, >table>tbody
 		border-top 3px solid #ccc
 	>table>tbody

@@ -72,18 +72,18 @@ var ScoringRow = React.createClass({displayName: "ScoringRow",
 			if (rollsData.length === 1) {
 				// If there was only one roll in this frame, we create a column with colspan=2.
 				rolls.push(
-					React.createElement("td", {key: frameKey + '-roll', colSpan: "2", className: 'points ' + frameColor(index)}, rollsData[0])
+					React.createElement("td", {key: frameKey + '-roll', colSpan: "2", className: 'points rolls ' + frameColor(index)}, rollsData[0])
 				);
 			} else if (rollsData.length === 2) {
 				// If there was two rolls in this frame, we create two columns with colspan=1.
 				rolls.push(
-					React.createElement("td", {key: frameKey + '-roll-1', colSpan: "1", className: 'points ' + frameColor(index)}, rollsData[0]),
-					React.createElement("td", {key: frameKey + '-roll-2', colSpan: "1", className: 'points ' + frameColor(index)}, rollsData[1])
+					React.createElement("td", {key: frameKey + '-roll-1', colSpan: "1", className: 'points rolls ' + frameColor(index)}, rollsData[0]),
+					React.createElement("td", {key: frameKey + '-roll-2', colSpan: "1", className: 'points rolls ' + frameColor(index)}, rollsData[1])
 				);
 			} else {
 				// Do not show any information in this frame.
 				rolls.push(
-					React.createElement("td", {key: frameKey + '-roll', colSpan: "2", className: 'points ' + frameColor(index)})
+					React.createElement("td", {key: frameKey + '-roll', colSpan: "2", className: 'points rolls ' + frameColor(index)})
 				);
 			}
 		});
@@ -103,7 +103,7 @@ var ScoringRow = React.createClass({displayName: "ScoringRow",
 
 						// Insert the number of points in each frame.
 						return (
-							React.createElement("td", {key: frameKey, colSpan: "2", className: 'points ' + frameColor(index)}, frameData.points)
+							React.createElement("td", {key: frameKey, colSpan: "2", className: 'points frame ' + frameColor(index)}, frameData.points)
 						);
 					})
 				)
