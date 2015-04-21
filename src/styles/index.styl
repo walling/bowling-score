@@ -1,6 +1,9 @@
+@import url('http://fonts.googleapis.com/css?family=Lato:300,900')
 @import reset
 
 body
+	font-family 'Lato', sans-serif
+	font-weight 300
 	background #ddd
 	padding 0 1rem
 	@media screen and (max-width: 600px)
@@ -9,6 +12,7 @@ body
 header
 	padding 1rem 0
 	>h1
+		color #a00
 		text-align center
 		font-size 2rem
 
@@ -25,6 +29,9 @@ number-of-points-columns = 20
 		width 100%
 		table-layout fixed
 		background #eee
+	>table th
+		font-weight 900
+		color #444
 	>table th, >table td
 		width (width-points-columns / number-of-points-columns)
 		text-align center
