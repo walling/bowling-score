@@ -1,2 +1,33 @@
+@import reset
+
 body
 	background #ddd
+
+header
+	padding 1rem 0
+	>h1
+		text-align center
+		font-size 2rem
+
+width-name-column = 9%
+width-total-column = 6%
+width-points-columns = 100% - width-name-column - width-total-column
+number-of-points-columns = 20
+
+.scoring
+	>table
+		width 100%
+		table-layout fixed
+	>table th, >table td
+		width (width-points-columns / number-of-points-columns)
+		text-align center
+		vertical-align middle
+		height 2rem
+	>table .name
+		width width-name-column
+		text-align left
+	>table .total
+		width width-total-column
+		text-align right
+	>table, >table th, >table td
+		border 1px solid #000
