@@ -44,8 +44,8 @@ var App = React.createClass({
 	 * Event when add player is clicked. Adds another player to the list.
 	 */
 	addPlayer: function() {
-		this.state.players.push({ frames: [] });
-		this.setState({ players: this.state.players });
+		var players = this.state.players.concat([ { frames: [] } ]);
+		this.setState({ players: players });
 	},
 
 	/**
@@ -54,8 +54,7 @@ var App = React.createClass({
 	 */
 	removePlayer: function() {
 		if (this.canRemovePlayer()) {
-			this.state.players.pop();
-			this.setState({ players: this.state.players });
+			this.setState({ players: this.state.players.slice(0, -1) });
 		}
 	}
 
