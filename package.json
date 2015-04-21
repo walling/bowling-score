@@ -1,0 +1,26 @@
+{
+  "private": true,
+  "name": "bowling-score",
+  "version": "0.1.0",
+  "description": "Bowling Score",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/walling/bowling-score.git"
+  },
+  "keywords": [
+    "bowling",
+    "score",
+    "scoring",
+    "game"
+  ],
+  "author": "Bjarke Walling <bwp@bwp.dk>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/walling/bowling-score/issues"
+  },
+  "homepage": "https://github.com/walling/bowling-score",
+  "devDependencies": {
+    "gulp": "^3.8.11",
+    "gulp-htmlmin": "^1.1.1"
+  }
+}
