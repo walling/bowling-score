@@ -18,7 +18,7 @@ var App = React.createClass({
 			<section className="app">
 				<Header/>
 				<Scoring players={this.state.players} />
-				<SetupController canRemovePlayer={this.canRemovePlayer()} onAddPlayer={this.addPlayer} onRemovePlayer={this.removePlayer} onStartGame={this.startGame} />
+				<SetupController canAddPlayer={this.canAddPlayer()} canRemovePlayer={this.canRemovePlayer()} onAddPlayer={this.addPlayer} onRemovePlayer={this.removePlayer} onStartGame={this.startGame} />
 			</section>
 		);
 	},
@@ -33,6 +33,14 @@ var App = React.createClass({
 	},
 
 	/**
+	 * Returns true if more players can be added to the list.
+	 * Ensures that there are a maximum of 6 players.
+	 */
+	canAddPlayer: function() {
+		return (this.state.players.length < 6);
+	},
+
+	/**
 	 * Returns true if more players can be removed from the list.
 	 * Ensures that there are at least one player left.
 	 */
@@ -44,8 +52,10 @@ var App = React.createClass({
 	 * Event when add player is clicked. Adds another player to the list.
 	 */
 	addPlayer: function() {
-		var players = this.state.players.concat([ { frames: [] } ]);
-		this.setState({ players: players });
+		if (this.canAddPlayer()) {
+			var players = this.state.players.concat([ { frames: [] } ]);
+			this.setState({ players: players });
+		}
 	},
 
 	/**

@@ -313,7 +313,7 @@ var SetupController = React.createClass({displayName: "SetupController",
 	render: function() {
 		return (
 			React.createElement("section", {className: "setup controller"}, 
-				React.createElement("button", {onClick: this.addPlayerClicked}, "Add player"), 
+				React.createElement("button", {disabled: !this.props.canAddPlayer, onClick: this.addPlayerClicked}, "Add player"), 
 				React.createElement("button", {disabled: !this.props.canRemovePlayer, onClick: this.removePlayerClicked}, "Remove player"), 
 				React.createElement("button", {className: "highlighted"}, "Start game")
 			)
@@ -356,7 +356,7 @@ var App = React.createClass({displayName: "App",
 			React.createElement("section", {className: "app"}, 
 				React.createElement(Header, null), 
 				React.createElement(Scoring, {players: this.state.players}), 
-				React.createElement(SetupController, {canRemovePlayer: this.canRemovePlayer(), onAddPlayer: this.addPlayer, onRemovePlayer: this.removePlayer, onStartGame: this.startGame})
+				React.createElement(SetupController, {canAddPlayer: this.canAddPlayer(), canRemovePlayer: this.canRemovePlayer(), onAddPlayer: this.addPlayer, onRemovePlayer: this.removePlayer, onStartGame: this.startGame})
 			)
 		);
 	},
@@ -371,6 +371,14 @@ var App = React.createClass({displayName: "App",
 	},
 
 	/**
+	 * Returns true if more players can be added to the list.
+	 * Ensures that there are a maximum of 6 players.
+	 */
+	canAddPlayer: function() {
+		return (this.state.players.length < 6);
+	},
+
+	/**
 	 * Returns true if more players can be removed from the list.
 	 * Ensures that there are at least one player left.
 	 */
@@ -382,8 +390,10 @@ var App = React.createClass({displayName: "App",
 	 * Event when add player is clicked. Adds another player to the list.
 	 */
 	addPlayer: function() {
-		var players = this.state.players.concat([ { frames: [] } ]);
-		this.setState({ players: players });
+		if (this.canAddPlayer()) {
+			var players = this.state.players.concat([ { frames: [] } ]);
+			this.setState({ players: players });
+		}
 	},
 
 	/**
