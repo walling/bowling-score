@@ -10,6 +10,13 @@ function frameColor(index) {
 }
 
 /**
+ * Default name for a given player.
+ */
+function placeholderName(id) {
+	return 'Player ' + id;
+}
+
+/**
  * View for one row in the scoring table representing a single player.
  */
 var ScoringRow = React.createClass({
@@ -57,7 +64,12 @@ var ScoringRow = React.createClass({
 		return (
 			<tbody>
 				<tr>
-					<td className="name" rowSpan="2">{rowData.name}</td>
+					{rowData.editName
+					? <td className="edit name" rowSpan="2">
+							<input type="text" ref="name" placeholder={placeholderName(rowData.id)} defaultValue={rowData.name} onBlur={this.editNameDone} onKeyDown={this.editNameKey} />
+						</td>
+					: <td className="name" rowSpan="2" onClick={this.editNameBegin}>{rowData.name || placeholderName(rowData.id)}</td>
+					}
 					{rolls}
 					<td className="total" rowSpan="2">{rowData.total}</td>
 				</tr>
@@ -74,6 +86,44 @@ var ScoringRow = React.createClass({
 				</tr>
 			</tbody>
 		);
+	},
+
+	editNameBegin: function(event) {
+		event.preventDefault();
+		var data = this.props.data;
+		data.editName = true;
+		this.setState({ data: data }, function() {
+			var inputElement = React.findDOMNode(this.refs.name);
+			inputElement.select();
+			inputElement.focus();
+		});
+	},
+
+	editNameDone: function(event) {
+		event.preventDefault();
+
+		var data = this.props.data;
+		data.editName = false;
+		data.name = React.findDOMNode(this.refs.name).value.trim();
+		this.setState({ data: data });
+	},
+
+	editNameKey: function(event) {
+		var data = this.props.data;
+
+		if (event.which === 27) {
+			// Escape key: Cancel editing and revert to old name.
+			event.preventDefault();
+			data.editName = false;
+			this.setState({ data: data });
+
+		} else if (event.which === 13) {
+			// Enter key: Accept new name.
+			event.preventDefault();
+			data.editName = false;
+			data.name = React.findDOMNode(this.refs.name).value.trim();
+			this.setState({ data: data });
+		}
 	}
 });
 
