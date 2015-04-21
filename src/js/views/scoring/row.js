@@ -21,16 +21,22 @@ function placeholderName(id) {
  */
 var ScoringRow = React.createClass({
 	render: function() {
-		var rowData = this.props.data;
-
 		// Key used by React.
-		var rowKey = 'scoring-row-' + rowData.id;
+		var rowKey = 'scoring-row-' + this.props.playerId;
+
+		var framesData = [];
+		for (var index = 0; index < 10; index++) {
+			framesData[index] = {
+				rolls: this.props.frames[index] || [],
+				points: null
+			};
+		}
 
 		// Collect all the rolls for the given player. We do it this way instead of a simple
 		// `.map`, since there can be either one or two rolls in each frame, so we don't know
 		// the exact number of output columns beforehand.
 		var rolls = [];
-		rowData.frames.forEach(function(frameData, index) {
+		framesData.forEach(function(frameData, index) {
 			var rollsData = frameData.rolls;
 
 			// Key used by React.
@@ -64,17 +70,17 @@ var ScoringRow = React.createClass({
 		return (
 			<tbody>
 				<tr>
-					{rowData.editName
-					? <td className="edit name" rowSpan="2">
-							<input type="text" ref="name" placeholder={placeholderName(rowData.id)} defaultValue={rowData.name} onBlur={this.editNameDone} onKeyDown={this.editNameKey} />
-						</td>
-					: <td className="name" rowSpan="2" onClick={this.editNameBegin}>{rowData.name || placeholderName(rowData.id)}</td>
+					{this.state.editName
+						? <td className="edit name" rowSpan="2">
+								<input type="text" ref="nameInput" autoFocus placeholder={placeholderName(this.props.playerId)} defaultValue={this.state.name} onBlur={this.editNameBlur} onKeyDown={this.editNameKey} />
+							</td>
+						: <td ref="name" className="name" rowSpan="2" tabIndex="0" onClick={this.nameClicked} onKeyDown={this.nameKey}>{this.state.name || placeholderName(this.props.playerId)}</td>
 					}
 					{rolls}
-					<td className="total" rowSpan="2">{rowData.total}</td>
+					<td className="total" rowSpan="2">42</td>
 				</tr>
 				<tr>
-					{rowData.frames.map(function(frameData, index) {
+					{framesData.map(function(frameData, index) {
 						// Key used by React.
 						var frameKey = rowKey + '-frame-' + index;
 
@@ -88,41 +94,61 @@ var ScoringRow = React.createClass({
 		);
 	},
 
-	editNameBegin: function(event) {
-		event.preventDefault();
-		var data = this.props.data;
-		data.editName = true;
-		this.setState({ data: data }, function() {
-			var inputElement = React.findDOMNode(this.refs.name);
+	getInitialState: function() {
+		return {
+			name: '',
+			editName: true
+		};
+	},
+
+	startEditingName: function() {
+		this.setState({ editName: true }, function() {
+			var inputElement = React.findDOMNode(this.refs.nameInput);
 			inputElement.select();
 			inputElement.focus();
 		});
 	},
 
-	editNameDone: function(event) {
-		event.preventDefault();
+	stopEditingName: function(keepFocus, newName) {
+		var newState = { editName: false };
+		if (newName !== undefined) {
+			newState.name = newName.trim();
+		}
+		this.setState(newState, function() {
+			if (keepFocus) {
+				React.findDOMNode(this.refs.name).focus();
+			}
+		});
+	},
 
-		var data = this.props.data;
-		data.editName = false;
-		data.name = React.findDOMNode(this.refs.name).value.trim();
-		this.setState({ data: data });
+	nameClicked: function(event) {
+		event.preventDefault();
+		this.startEditingName();
+	},
+
+	nameKey: function(event) {
+		if (event.which === 13) {
+			event.preventDefault();
+			this.startEditingName();
+		}
+	},
+
+	editNameBlur: function(event) {
+		event.preventDefault();
+		this.stopEditingName(false, React.findDOMNode(this.refs.nameInput).value);
 	},
 
 	editNameKey: function(event) {
 		var data = this.props.data;
 
 		if (event.which === 27) {
-			// Escape key: Cancel editing and revert to old name.
+			// Escape key: Cancel editing.
 			event.preventDefault();
-			data.editName = false;
-			this.setState({ data: data });
-
+			this.stopEditingName(true); // not specifying name reverts to old name
 		} else if (event.which === 13) {
 			// Enter key: Accept new name.
 			event.preventDefault();
-			data.editName = false;
-			data.name = React.findDOMNode(this.refs.name).value.trim();
-			this.setState({ data: data });
+			this.stopEditingName(true, React.findDOMNode(this.refs.nameInput).value);
 		}
 	}
 });

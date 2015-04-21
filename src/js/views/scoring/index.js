@@ -8,7 +8,7 @@ var ScoringRow = require('./row');
  */
 var Scoring = React.createClass({
 	render: function() {
-		var tableData = this.props.data;
+		var playersData = this.props.players;
 
 		return (
 			<section className="scoring">
@@ -27,13 +27,14 @@ var Scoring = React.createClass({
 						<th colSpan="2" className="points white">10</th>
 						<th className="total">Total</th>
 					</thead>
-					{tableData.map(function(scoringRowData) {
+					{playersData.map(function(playerData, index) {
 						// Key used by React.
-						var rowKey = 'scoring-row-' + scoringRowData.id;
+						var playerId = index + 1;
+						var rowKey = 'scoring-row-' + playerId;
 
 						// Create each player row in the scoring table.
 						return (
-							<ScoringRow key={rowKey} data={scoringRowData} />
+							<ScoringRow key={rowKey} playerId={playerId} frames={playerData.frames} />
 						);
 					})}
 				</table>

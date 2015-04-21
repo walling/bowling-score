@@ -61,16 +61,22 @@ function placeholderName(id) {
  */
 var ScoringRow = React.createClass({displayName: "ScoringRow",
 	render: function() {
-		var rowData = this.props.data;
-
 		// Key used by React.
-		var rowKey = 'scoring-row-' + rowData.id;
+		var rowKey = 'scoring-row-' + this.props.playerId;
+
+		var framesData = [];
+		for (var index = 0; index < 10; index++) {
+			framesData[index] = {
+				rolls: this.props.frames[index] || [],
+				points: null
+			};
+		}
 
 		// Collect all the rolls for the given player. We do it this way instead of a simple
 		// `.map`, since there can be either one or two rolls in each frame, so we don't know
 		// the exact number of output columns beforehand.
 		var rolls = [];
-		rowData.frames.forEach(function(frameData, index) {
+		framesData.forEach(function(frameData, index) {
 			var rollsData = frameData.rolls;
 
 			// Key used by React.
@@ -104,17 +110,17 @@ var ScoringRow = React.createClass({displayName: "ScoringRow",
 		return (
 			React.createElement("tbody", null, 
 				React.createElement("tr", null, 
-					rowData.editName
-					? React.createElement("td", {className: "edit name", rowSpan: "2"}, 
-							React.createElement("input", {type: "text", ref: "name", placeholder: placeholderName(rowData.id), defaultValue: rowData.name, onBlur: this.editNameDone, onKeyDown: this.editNameKey})
-						)
-					: React.createElement("td", {className: "name", rowSpan: "2", onClick: this.editNameBegin}, rowData.name || placeholderName(rowData.id)), 
+					this.state.editName
+						? React.createElement("td", {className: "edit name", rowSpan: "2"}, 
+								React.createElement("input", {type: "text", ref: "nameInput", autoFocus: true, placeholder: placeholderName(this.props.playerId), defaultValue: this.state.name, onBlur: this.editNameBlur, onKeyDown: this.editNameKey})
+							)
+						: React.createElement("td", {ref: "name", className: "name", rowSpan: "2", tabIndex: "0", onClick: this.nameClicked, onKeyDown: this.nameKey}, this.state.name || placeholderName(this.props.playerId)), 
 					
 					rolls, 
-					React.createElement("td", {className: "total", rowSpan: "2"}, rowData.total)
+					React.createElement("td", {className: "total", rowSpan: "2"}, "42")
 				), 
 				React.createElement("tr", null, 
-					rowData.frames.map(function(frameData, index) {
+					framesData.map(function(frameData, index) {
 						// Key used by React.
 						var frameKey = rowKey + '-frame-' + index;
 
@@ -128,41 +134,61 @@ var ScoringRow = React.createClass({displayName: "ScoringRow",
 		);
 	},
 
-	editNameBegin: function(event) {
-		event.preventDefault();
-		var data = this.props.data;
-		data.editName = true;
-		this.setState({ data: data }, function() {
-			var inputElement = React.findDOMNode(this.refs.name);
+	getInitialState: function() {
+		return {
+			name: '',
+			editName: true
+		};
+	},
+
+	startEditingName: function() {
+		this.setState({ editName: true }, function() {
+			var inputElement = React.findDOMNode(this.refs.nameInput);
 			inputElement.select();
 			inputElement.focus();
 		});
 	},
 
-	editNameDone: function(event) {
-		event.preventDefault();
+	stopEditingName: function(keepFocus, newName) {
+		var newState = { editName: false };
+		if (newName !== undefined) {
+			newState.name = newName.trim();
+		}
+		this.setState(newState, function() {
+			if (keepFocus) {
+				React.findDOMNode(this.refs.name).focus();
+			}
+		});
+	},
 
-		var data = this.props.data;
-		data.editName = false;
-		data.name = React.findDOMNode(this.refs.name).value.trim();
-		this.setState({ data: data });
+	nameClicked: function(event) {
+		event.preventDefault();
+		this.startEditingName();
+	},
+
+	nameKey: function(event) {
+		if (event.which === 13) {
+			event.preventDefault();
+			this.startEditingName();
+		}
+	},
+
+	editNameBlur: function(event) {
+		event.preventDefault();
+		this.stopEditingName(false, React.findDOMNode(this.refs.nameInput).value);
 	},
 
 	editNameKey: function(event) {
 		var data = this.props.data;
 
 		if (event.which === 27) {
-			// Escape key: Cancel editing and revert to old name.
+			// Escape key: Cancel editing.
 			event.preventDefault();
-			data.editName = false;
-			this.setState({ data: data });
-
+			this.stopEditingName(true); // not specifying name reverts to old name
 		} else if (event.which === 13) {
 			// Enter key: Accept new name.
 			event.preventDefault();
-			data.editName = false;
-			data.name = React.findDOMNode(this.refs.name).value.trim();
-			this.setState({ data: data });
+			this.stopEditingName(true, React.findDOMNode(this.refs.nameInput).value);
 		}
 	}
 });
@@ -177,7 +203,7 @@ return exports;
  */
 var Scoring = React.createClass({displayName: "Scoring",
 	render: function() {
-		var tableData = this.props.data;
+		var playersData = this.props.players;
 
 		return (
 			React.createElement("section", {className: "scoring"}, 
@@ -196,13 +222,14 @@ var Scoring = React.createClass({displayName: "Scoring",
 						React.createElement("th", {colSpan: "2", className: "points white"}, "10"), 
 						React.createElement("th", {className: "total"}, "Total")
 					), 
-					tableData.map(function(scoringRowData) {
+					playersData.map(function(playerData, index) {
 						// Key used by React.
-						var rowKey = 'scoring-row-' + scoringRowData.id;
+						var playerId = index + 1;
+						var rowKey = 'scoring-row-' + playerId;
 
 						// Create each player row in the scoring table.
 						return (
-							React.createElement(ScoringRow, {key: rowKey, data: scoringRowData})
+							React.createElement(ScoringRow, {key: rowKey, playerId: playerId, frames: playerData.frames})
 						);
 					})
 				)
@@ -215,6 +242,41 @@ exports = Scoring;
 
 return exports;
 })());
+var SetupController = ((function() {
+var exports = {};
+'use strict';
+
+var React = __small$_mod_0;
+
+/**
+ * View for the controller.
+ */
+var SetupController = React.createClass({displayName: "SetupController",
+	render: function() {
+		return (
+			React.createElement("section", {className: "setup controller"}, 
+				React.createElement("button", {onClick: this.addPlayerClicked}, "Add player"), 
+				React.createElement("button", {onClick: this.removePlayerClicked}, "Remove player"), 
+				React.createElement("button", {className: "highlighted"}, "Start game")
+			)
+		);
+	},
+
+	addPlayerClicked: function(event) {
+		event.preventDefault();
+		this.props.onAddPlayer();
+	},
+
+	removePlayerClicked: function(event) {
+		event.preventDefault();
+		this.props.onRemovePlayer();
+	}
+});
+
+exports = SetupController;
+
+return exports;
+})());
 
 /**
  * View for the app.
@@ -224,10 +286,31 @@ var App = React.createClass({displayName: "App",
 		return (
 			React.createElement("section", {className: "app"}, 
 				React.createElement(Header, null), 
-				React.createElement(Scoring, {data: this.props.scoringTableData})
+				React.createElement(Scoring, {players: this.state.players}), 
+				React.createElement(SetupController, {onAddPlayer: this.addPlayer, onRemovePlayer: this.removePlayer, onStartGame: this.startGame})
 			)
 		);
+	},
+
+	getInitialState: function() {
+		// Begin with just a single unnamed player.
+		return {
+			players: [ { frames: [] } ]
+		};
+	},
+
+	addPlayer: function() {
+		this.state.players.push({ frames: [] });
+		this.setState({ players: this.state.players });
+	},
+
+	removePlayer: function() {
+		if (this.state.players.length > 1) {
+			this.state.players.pop();
+			this.setState({ players: this.state.players });
+		}
 	}
+
 });
 
 exports = App;
@@ -235,30 +318,9 @@ exports = App;
 return exports;
 })());
 
-/**
- * Creates test data with frames for a given player.
- */
-function createTestFrames() {
-	var frames = [];
-	for (var i = 1; i <= 10; i++) {
-		frames.push({
-			rolls: Math.random() > 0.5 ? [3, 7] : [10],
-			points: 10
-		});
-	}
-	return frames;
-}
-
-// Mock-up data with three players.
-var scoringTableData = [
-	{ id: 1, name: 'David', frames: createTestFrames(), total: 70 },
-	{ id: 2, name: 'Dennis', frames: createTestFrames(), total: 70 },
-	{ id: 3, name: 'Diane', frames: createTestFrames(), total: 70 }
-];
-
 // Render the app.
 React.render(
-	React.createElement(App, {scoringTableData: scoringTableData}),
+	React.createElement(App, null),
 	document.body
 );
 
