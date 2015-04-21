@@ -31,6 +31,7 @@ number-of-points-columns = 20
 		&.edit
 			padding-left 0
 			background #fff
+			outline 1px solid #999
 			@media screen and (max-width: 450px)
 				padding-left 0
 			>input
@@ -41,6 +42,9 @@ number-of-points-columns = 20
 				border 0
 				padding 0 0 0 0.5rem
 				margin 0
+				outline none
+				@media screen and (max-width: 450px)
+					padding-left 0.1rem
 	>table .total
 		width width-total-column
 		text-align right
