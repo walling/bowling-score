@@ -1,56 +1,57 @@
+disabled-color-mix = 30%
+
+input-look-and-feel(fg-color, bg-color)
+	display block
+	width 100%
+	margin-top 0.5rem
+	height 2rem
+
+	color fg-color
+	background bg-color
+	border-radius 1rem
+	border 0
+
+	font-normal-weight()
+	font-size 1rem
+	text-align center
+
+	&:disabled
+		color mix(bg-color, #fff, disabled-color-mix)
+		text-shadow 0 -1px 0 mix(#000, bg-color, disabled-color-mix)
+	&::-moz-focus-inner
+		border 0
+	&:focus
+		outline 1px dashed #666 !important
+
+highlighted-button-look-and-feel(fg-color, bg-color, border-color)
+	color fg-color
+	background bg-color
+	border-bottom-color border-color
+
+	&:disabled
+		color mix(bg-color, fg-color, disabled-color-mix)
+		text-shadow 0 -1px 0 mix(border-color, bg-color, disabled-color-mix)
+
 .controller
 	width 10rem
 	margin 2rem auto 0
 
 	button
-		display block
-		width 100%
-		margin-top 0.5rem
-		height 2rem
-		background #a00
-		border-radius 1rem
-		border 0
+		input-look-and-feel(#fff, #a00)
 		border-bottom 2px solid #600
-		color #fff
-		font-family 'Lato', sans-serif
-		font-weight 300
-		font-size 1rem
-		text-align center
-		&:disabled
-			border-bottom 0
-			color mix(#a00, #fff, 30%)
-			text-shadow 0 -1px 0 mix(#000, #a00, 30%)
-		&::-moz-focus-inner
-			border 0
-		&:focus
-			outline 1px dashed #666 !important
-		&:active
+
+		&:disabled, &:active
 			border-bottom 0
 		&.highlighted
+			highlighted-button-look-and-feel(#fff, #444, #000)
 			margin-top 1.5rem
-			background #444
-			border-bottom-color #000
-			&:disabled
-				color mix(#444, #fff, 30%)
-				text-shadow 0 -1px 0 mix(#000, #444, 30%)
 
 	input
-		display block
-		width 100%
-		margin-top 0.5rem
-		height 2rem
-		background #fff
-		border-radius 1rem
-		border 0
-		color #333
-		font-family 'Lato', sans-serif
-		font-weight 300
-		font-size 1rem
-		text-align center
+		input-look-and-feel(#333, #fff)
+
 		&:disabled
 			background #eee
 			color #666
-		&::-moz-focus-inner
-			border 0
+			text-shadow none
 		&:focus
 			outline 0 !important

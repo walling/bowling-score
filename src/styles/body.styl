@@ -1,12 +1,18 @@
-body
+font-normal-weight()
 	font-family 'Lato', sans-serif
 	font-weight 300
+
+body
+	font-normal-weight()
+	color #111
 	background #ddd
+
 	padding 0 1rem
+
+	// Remove padding for small screens.
 	@media screen and (max-width: 600px)
 		padding 0
 
 input
-	font-family 'Lato', sans-serif
-	font-weight 300
+	font-normal-weight()
 	font-size 100%
