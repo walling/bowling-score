@@ -50,88 +50,79 @@ var framesLogic = ((function() {
 var exports = {};
 'use strict';
 
-/*  ***** Adapted from views/scoring/row.js, but not yet tested *****
+/**
+ * Normalises the given rolls in a frame. Rolls are represented as an array of pins
+ * knocked down. The result is a list of rolls as being presented in the scoreboard.
+ */
+function rollsData(frame, frameIndex) {
+	var isStrike, isSpare, isNext, firstType, secondType;
 
-function rollsData(frame, key, index) {
-	// If first roll is not a strike, the player must roll one more time.
-	if (frame.length === 1 && frame[0] < 10) {
-		frame = [frame[0], null];
-	}
-
-	if (frame.length === 1) {
-		// If there was only one roll in this frame, it must be a strike.
+	if (frame.length === 0) {
+		// No rolls in frame, just return empty roll.
 		return [
-			{ frameIndex: index, key: key + '-roll', colSpan: 2, type: 'strike', knockedDown: 10 }
+			{ frameIndex: frameIndex, type: 'empty', colSpan: 2, knockedDown: 0 }
 		];
 
-	} else if (frame.length === 2) {
-		// It is a spare if the total number of pins knocked down is 10.
-		var first = frame[0] | 0;
-		var second = frame[1] | 0;
-		var isSpare = (first + second === 10);
-		var firstType =
-			(first === null) ? 'next' :
-			'normal';
-		var secondType =
-			isSpare ? 'spare' :
-			(first !== null && second === null) ? 'next' :
-			'normal';
+	} else if (frame.length === 1) {
+		// One roll in frame. Check to see if it is a strike or not.
+		isStrike = (frame[0] === 10);
 
-		// If there was two rolls in this frame, we create two columns with colspan=1.
-		return [
-			{ frameIndex: index, key: key + '-roll-1', colSpan: 1, type: firstType, knockedDown: first },
-			{ frameIndex: index, key: key + '-roll-2', colSpan: 1, type: secondType, knockedDown: second }
-		];
+		if (isStrike) {
+			// A strike, there is no second roll.
+			return [
+				{ frameIndex: frameIndex, type: 'strike', colSpan: 2, knockedDown: 10 }
+			];
+		} else {
+			// A single normal roll, the second roll is empty.
+			// Check whether the first roll is the next one.
+			isNext = (frame[0] === null);
+			firstType = isNext ? 'next' : 'normal';
+
+			return [
+				{ frameIndex: frameIndex, type: firstType, colSpan: 1, knockedDown: frame[0] | 0 },
+				{ frameIndex: frameIndex, type: 'empty', colSpan: 1, knockedDown: 0 },
+			];
+		}
 
 	} else {
-		// Do not show any information in this frame.
+		// Two rolls in frame. Check to see if it is a spare or not.
+		isSpare = (frame[0] + frame[1] === 10);
+
+		// Check to see if the second roll is the next one.
+		isNext = (frame[1] === null);
+
+		// Determine type of second roll.
+		secondType = isNext ? 'next' : isSpare ? 'spare' : 'normal';
+
 		return [
-			{ frameIndex: index, key: key + '-roll', colSpan: 2, type: 'empty', knockedDown: 0 }
+			{ frameIndex: frameIndex, type: 'normal', colSpan: 1, knockedDown: frame[0] | 0 },
+			{ frameIndex: frameIndex, type: secondType, colSpan: 1, knockedDown: frame[1] | 0 }
 		];
 	}
 }
 
-function framesData(frames, key) {
-	var rolls = [];
-	var points = [];
-	var total = 0;
-
-	// Calculate points for all frames as well as total.
-	for (var index = 0; index < 10; index++) {
-		var frameKey = key + '-frame-' + index;
-		var frame = frames[index] || [];
-
-		// Collect all the rolls for the given player. We do it this way instead of a simple
-		// `.map`, since there can be either one or two rolls in each frame, so we don't know
-		// the exact number of output columns in the table beforehand.
-		rolls = rolls.concat(rollsData(frame, frameKey, index));
-
-		points.push({
-			key: frameKey + '-points',
-			points: null
-		});
-	}
-
-	return {
-		rolls: rolls,
-		points: points,
-		total: total
-	};
-}
-*/
-
+/**
+ * For given player frames, collect all rolls, frame points and total. The frames are
+ * represented with an array or rolls. Rolls are represented as an array of pins
+ * knocked down. Null represents the next roll. For example,
+ *
+ *     [ [1, 3], [10], [7, null] ]
+ *
+ * represents a roll of 1 and 3 in the first frame, a strike in the second frame,
+ * followed by a roll of 7. The second roll in the third frame is the next one.
+ */
 function framesData(frames) {
 	var rolls = [];
 	var points = [];
 
 	for (var index = 0; index < 10; index++) {
-		rolls.push({
-			frameIndex: index,
-			type: 'empty',
-			colSpan: 2,
-			knockedDown: 0
-		});
+		var frame = frames[index] || [];
 
+		// Collect all the rolls for the given player.
+		var frameRolls = rollsData(frame, index);
+		rolls = rolls.concat(frameRolls);
+
+		// Collect points in each frame.
 		points.push({
 			frameIndex: index,
 			points: null
@@ -145,6 +136,7 @@ function framesData(frames) {
 	};
 }
 
+exports.rollsData = rollsData;
 exports.data = framesData;
 
 return exports;
