@@ -887,14 +887,10 @@ var BowlingScoreApp = React.createClass({displayName: "BowlingScoreApp",
 	 * Event when a roll is performed.
 	 */
 	roll: function(pins) {
+		// Defensive programming: Ensure pins are in the correct interval.
 		pins = Math.max(0, Math.min(this.state.pinsRemaining, pins));
-		console.log('Roll: ' + pins);
 
-		var pinsRemaining = this.state.pinsRemaining - pins;
-		if (pinsRemaining <= 0) {
-			pinsRemaining = 10;
-		}
-
+		// Advance to new game state.
 		var players = gameLogic.advancePlayersToNextRoll(pins, this.state.players);
 		this.setState({
 			pinsRemaining: players.pinsRemaining,
