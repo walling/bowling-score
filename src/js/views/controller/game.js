@@ -12,8 +12,10 @@ var GameController = React.createClass({
 	 */
 	render: function() {
 		// If there are 10 pins remaining, show default text, otherwise the number of remaining pins.
-		var pinsPlaceholderText = (this.props.pinsRemaining === 10) ?
-			'Knocked down pins' :
+		// If the game ended, display that.
+		var pinsPlaceholderText =
+			(!this.props.running) ? 'Game ended' :
+			(this.props.pinsRemaining === 10) ? 'Knocked down pins' :
 			this.props.pinsRemaining + ' remaining';
 
 		// Text for auto-play toggle button.
@@ -42,6 +44,19 @@ var GameController = React.createClass({
 		return {
 			autoPlay: false
 		};
+	},
+
+	componentWillReceiveProps: function(newProps) {
+		// If game is not longer running, reset input field and stop auto-play.
+		if (!newProps.running) {
+			React.findDOMNode(this.refs.pinsInput).value = '';
+
+			if (this.autoPlayTimer) {
+				clearInterval(this.autoPlayTimer);
+				this.autoPlayTimer = null;
+				this.setState({ autoPlay: false });
+			}
+		}
 	},
 
 	/**

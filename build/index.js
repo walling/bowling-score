@@ -395,8 +395,10 @@ var GameController = React.createClass({displayName: "GameController",
 	 */
 	render: function() {
 		// If there are 10 pins remaining, show default text, otherwise the number of remaining pins.
-		var pinsPlaceholderText = (this.props.pinsRemaining === 10) ?
-			'Knocked down pins' :
+		// If the game ended, display that.
+		var pinsPlaceholderText =
+			(!this.props.running) ? 'Game ended' :
+			(this.props.pinsRemaining === 10) ? 'Knocked down pins' :
 			this.props.pinsRemaining + ' remaining';
 
 		// Text for auto-play toggle button.
@@ -425,6 +427,19 @@ var GameController = React.createClass({displayName: "GameController",
 		return {
 			autoPlay: false
 		};
+	},
+
+	componentWillReceiveProps: function(newProps) {
+		// If game is not longer running, reset input field and stop auto-play.
+		if (!newProps.running) {
+			React.findDOMNode(this.refs.pinsInput).value = '';
+
+			if (this.autoPlayTimer) {
+				clearInterval(this.autoPlayTimer);
+				this.autoPlayTimer = null;
+				this.setState({ autoPlay: false });
+			}
+		}
 	},
 
 	/**
@@ -735,7 +750,7 @@ var BowlingScoreApp = React.createClass({displayName: "BowlingScoreApp",
 				this.state.running ?
 
 					// Show game controller when game is running.
-					React.createElement(GameController, {pinsRemaining: this.state.pinsRemaining, running: true, onRoll: this.roll}) :
+					React.createElement(GameController, {pinsRemaining: this.state.pinsRemaining, running: this.state.players[0].frames.length <= 10, onRoll: this.roll}) :
 
 					// Show setup controller (to add/remove players and start game), when game is not yet running.
 					React.createElement(SetupController, {canAddPlayer: this.canAddPlayer(), canRemovePlayer: this.canRemovePlayer(), onAddPlayer: this.addPlayer, onRemovePlayer: this.removePlayer, onStartGame: this.startGame})

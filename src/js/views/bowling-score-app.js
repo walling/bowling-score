@@ -24,7 +24,7 @@ var BowlingScoreApp = React.createClass({
 				{this.state.running ?
 
 					// Show game controller when game is running.
-					<GameController pinsRemaining={this.state.pinsRemaining} running={true} onRoll={this.roll} /> :
+					<GameController pinsRemaining={this.state.pinsRemaining} running={this.state.players[0].frames.length <= 10} onRoll={this.roll} /> :
 
 					// Show setup controller (to add/remove players and start game), when game is not yet running.
 					<SetupController canAddPlayer={this.canAddPlayer()} canRemovePlayer={this.canRemovePlayer()} onAddPlayer={this.addPlayer} onRemovePlayer={this.removePlayer} onStartGame={this.startGame} />
