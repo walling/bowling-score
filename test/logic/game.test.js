@@ -11,30 +11,94 @@ function singlePlayerFrames(frames) {
 }
 
 describe('logic/game', function() {
-	describe('.advanceToNextRoll()', function() {
+	describe('.advancePlayersToNextRoll()', function() {
 
 		it('advances the same player, when there is only one player', function() {
-			var players = game.advanceToNextRoll(singlePlayerFrames([]));
+			var players = game.advancePlayersToNextRoll(8, singlePlayerFrames([ [null] ]));
 			players.should.have.length(1);
-			players[0].frames.should.deep.equal([[null]]);
+			players[0].frames.should.deep.equal([ [8, null] ]);
 
-			game.advanceToNextRoll(singlePlayerFrames([
-				[3, 4], [9, 1], []
-			]))[0].frames.should.deep.equal([
+			game.advancePlayersToNextRoll(10, singlePlayerFrames([
 				[3, 4], [9, 1], [null]
-			]);
-
-			game.advanceToNextRoll(singlePlayerFrames([
-				[3, 4], [9, 1], [7]
-			]))[0].frames.should.deep.equal([
-				[3, 4], [9, 1], [7, null]
-			]);
-
-			game.advanceToNextRoll(singlePlayerFrames([
-				[3, 4], [9, 1], [10]
 			]))[0].frames.should.deep.equal([
 				[3, 4], [9, 1], [10], [null]
 			]);
+
+			game.advancePlayersToNextRoll(2, singlePlayerFrames([
+				[3, 4], [9, 1], [7, null]
+			]))[0].frames.should.deep.equal([
+				[3, 4], [9, 1], [7, 2], [null]
+			]);
+
+			game.advancePlayersToNextRoll(1, singlePlayerFrames([
+				[3, 4], [9, 1], [10], [null]
+			]))[0].frames.should.deep.equal([
+				[3, 4], [9, 1], [10], [1, null]
+			]);
+		});
+
+	});
+
+	describe('.advancePlayersToBeginGame()', function() {
+
+		it('begins the game for a single player', function() {
+			var players = game.advancePlayersToBeginGame(singlePlayerFrames([]));
+			players.should.have.length(1);
+			players[0].frames.should.deep.equal([[null]]);
+		});
+
+		it('begins the game for a single player', function() {
+			var players = game.advancePlayersToBeginGame([
+				{ name: 'Player 1', frames: [] },
+				{ name: 'Player 2', frames: [] },
+				{ name: 'Player 3', frames: [] }
+			]);
+			players.should.have.length(3);
+			players.should.deep.equal([
+				{ name: 'Player 1', frames: [[null]] },
+				{ name: 'Player 2', frames: [] },
+				{ name: 'Player 3', frames: [] }
+			]);
+		});
+
+	});
+
+	describe('.advanceFramesToNextRoll()', function() {
+
+		it('advances for the first roll in a frame', function() {
+			var frames = game.advanceFramesToNextRoll(3, [ [null] ]);
+			frames.should.have.property('nextPlayer', false);
+			frames.should.have.property('advanced');
+			frames.advanced.should.deep.equal([ [3, null] ]);
+
+			frames = game.advanceFramesToNextRoll(6, [ [1, 9], [10], [null] ]);
+			frames.should.have.property('nextPlayer', false);
+			frames.should.have.property('advanced');
+			frames.advanced.should.deep.equal([ [1, 9], [10], [6, null] ]);
+		});
+
+		it('advances for the second roll in a frame', function() {
+			var frames = game.advanceFramesToNextRoll(3, [ [7, null] ]);
+			frames.should.have.property('nextPlayer', true);
+			frames.should.have.property('advanced');
+			frames.advanced.should.deep.equal([ [7, 3] ]);
+
+			frames = game.advanceFramesToNextRoll(6, [ [1, 9], [10], [2, null] ]);
+			frames.should.have.property('nextPlayer', true);
+			frames.should.have.property('advanced');
+			frames.advanced.should.deep.equal([ [1, 9], [10], [2, 6] ]);
+		});
+
+		it('advances to the next player for a strike roll', function() {
+			var frames = game.advanceFramesToNextRoll(10, [ [null] ]);
+			frames.should.have.property('nextPlayer', true);
+			frames.should.have.property('advanced');
+			frames.advanced.should.deep.equal([ [10] ]);
+
+			frames = game.advanceFramesToNextRoll(10, [ [1, 9], [7, 1], [null] ]);
+			frames.should.have.property('nextPlayer', true);
+			frames.should.have.property('advanced');
+			frames.advanced.should.deep.equal([ [1, 9], [7, 1], [10] ]);
 		});
 
 	});
