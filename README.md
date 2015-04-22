@@ -33,4 +33,4 @@ If you want the project to be built continuously, just execute `gulp` without an
 
 ## Testing
 
-To test the game logic, run `gulp test`.
+To test the game logic, run `gulp test`. The UI is tested in Firefox 37, Chrome 42, and Safari 8, all on Mac OS X.
