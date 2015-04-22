@@ -13,26 +13,34 @@ function singlePlayerFrames(frames) {
 describe('logic/game', function() {
 	describe('.advancePlayersToNextRoll()', function() {
 
+		it('returns the number of pins remaining', function() {
+			var players = game.advancePlayersToNextRoll(8, singlePlayerFrames([ [null] ]));
+			players.pinsRemaining.should.equal(2);
+
+			players = game.advancePlayersToNextRoll(8, singlePlayerFrames([ [1, null] ]));
+			players.pinsRemaining.should.equal(10);
+		});
+
 		it('advances the same player, when there is only one player', function() {
 			var players = game.advancePlayersToNextRoll(8, singlePlayerFrames([ [null] ]));
-			players.should.have.length(1);
-			players[0].frames.should.deep.equal([ [8, null] ]);
+			players.advanced.should.have.length(1);
+			players.advanced[0].frames.should.deep.equal([ [8, null] ]);
 
 			game.advancePlayersToNextRoll(10, singlePlayerFrames([
 				[3, 4], [9, 1], [null]
-			]))[0].frames.should.deep.equal([
+			])).advanced[0].frames.should.deep.equal([
 				[3, 4], [9, 1], [10], [null]
 			]);
 
 			game.advancePlayersToNextRoll(2, singlePlayerFrames([
 				[3, 4], [9, 1], [7, null]
-			]))[0].frames.should.deep.equal([
+			])).advanced[0].frames.should.deep.equal([
 				[3, 4], [9, 1], [7, 2], [null]
 			]);
 
 			game.advancePlayersToNextRoll(1, singlePlayerFrames([
 				[3, 4], [9, 1], [10], [null]
-			]))[0].frames.should.deep.equal([
+			])).advanced[0].frames.should.deep.equal([
 				[3, 4], [9, 1], [10], [1, null]
 			]);
 		});

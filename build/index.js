@@ -644,20 +644,27 @@ function advanceFramesToNextRoll(pins, frames) {
  * array of player objects. A player object contains `.name` and `.frames`
  * properties. The frames is described above in the `advanceFramesToNextRoll()`
  * function.
+ *
+ * Returns an object with the property `.pinsRemaining` telling how many pins
+ * there are left (or 10 for new players/rolls) and the updated players in
+ * property `.advanced`.
  */
 function advancePlayersToNextRoll(pins, players) {
 	// Update players while keeping data immutable.
-	players = clone(players);
-	players[0] = clone(players[0]);
+	var advancedPlayers = clone(players);
+	advancedPlayers[0] = clone(advancedPlayers[0]);
 
-	var frames = advanceFramesToNextRoll(pins, players[0].frames);
-	players[0].frames = frames.advanced;
+	var frames = advanceFramesToNextRoll(pins, advancedPlayers[0].frames);
+	advancedPlayers[0].frames = frames.advanced;
 
 	if (frames.nextPlayer) {
-		players = advanceToNextPlayer(0, players);
+		advancedPlayers = advanceToNextPlayer(0, advancedPlayers);
 	}
 
-	return players;
+	return {
+		pinsRemaining: frames.nextPlayer ? 10 : 10 - pins,
+		advanced: advancedPlayers
+	};
 }
 
 /**
@@ -793,9 +800,11 @@ var BowlingScoreApp = React.createClass({displayName: "BowlingScoreApp",
 		if (pinsRemaining <= 0) {
 			pinsRemaining = 10;
 		}
+
+		var players = gameLogic.advancePlayersToNextRoll(pins, this.state.players);
 		this.setState({
-			pinsRemaining: pinsRemaining,
-			players: gameLogic.advancePlayersToNextRoll(pins, this.state.players)
+			pinsRemaining: players.pinsRemaining,
+			players: players.advanced
 		});
 	}
 

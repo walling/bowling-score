@@ -117,9 +117,11 @@ var BowlingScoreApp = React.createClass({
 		if (pinsRemaining <= 0) {
 			pinsRemaining = 10;
 		}
+
+		var players = gameLogic.advancePlayersToNextRoll(pins, this.state.players);
 		this.setState({
-			pinsRemaining: pinsRemaining,
-			players: gameLogic.advancePlayersToNextRoll(pins, this.state.players)
+			pinsRemaining: players.pinsRemaining,
+			players: players.advanced
 		});
 	}
 
