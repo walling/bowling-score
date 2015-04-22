@@ -23,7 +23,7 @@ var BowlingScoreApp = React.createClass({
 				{this.state.running ?
 
 					// Show game controller when game is running.
-					<GameController pinsRemaining={10} running={true} /> :
+					<GameController pinsRemaining={this.state.pinsRemaining} running={true} onRoll={this.roll} /> :
 
 					// Show setup controller (to add/remove players and start game), when game is not yet running.
 					<SetupController canAddPlayer={this.canAddPlayer()} canRemovePlayer={this.canRemovePlayer()} onAddPlayer={this.addPlayer} onRemovePlayer={this.removePlayer} onStartGame={this.startGame} />
@@ -39,7 +39,8 @@ var BowlingScoreApp = React.createClass({
 	getInitialState: function() {
 		return {
 			players: [ this.newUnnamedPlayer() ],
-			running: false
+			running: false,
+			pinsRemaining: 10
 		};
 	},
 
@@ -99,6 +100,20 @@ var BowlingScoreApp = React.createClass({
 	 */
 	startGame: function() {
 		this.setState({ running: true });
+	},
+
+	/**
+	 * Event when a roll is performed.
+	 */
+	roll: function(pins) {
+		pins = Math.max(0, Math.min(this.state.pinsRemaining, pins));
+		console.log('Roll: ' + pins);
+
+		var pinsRemaining = this.state.pinsRemaining - pins;
+		if (pinsRemaining <= 0) {
+			pinsRemaining = 10;
+		}
+		this.setState({ pinsRemaining: pinsRemaining });
 	}
 
 });

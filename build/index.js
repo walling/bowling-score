@@ -407,17 +407,67 @@ var GameController = React.createClass({displayName: "GameController",
 			'Knocked down pins' :
 			this.props.pinsRemaining + ' remaining';
 
+		// Text for auto-play toggle button.
+		var autoPlayText = this.state.autoPlay ?
+			'Stop auto-play' :
+			'Auto-play game';
+
 		return (
 			React.createElement("section", {className: "game controller"}, 
 				React.createElement("form", {noValidate: true, onSubmit: this.rollSubmitted}, 
-					React.createElement("input", {disabled: !this.props.running, ref: "pinsInput", autoFocus: true, type: "number", min: "0", max: this.props.pinsRemaining, step: "1", required: true, placeholder: pinsPlaceholderText}), 
-					React.createElement("button", {disabled: !this.props.running, type: "submit"}, "Next roll")
+					React.createElement("input", {disabled: !this.props.running || this.state.autoPlay, ref: "pinsInput", autoFocus: true, type: "number", min: "0", max: this.props.pinsRemaining, step: "1", required: true, placeholder: pinsPlaceholderText}), 
+					React.createElement("button", {disabled: !this.props.running || this.state.autoPlay, type: "submit"}, "Next roll")
 				), 
-				React.createElement("button", {disabled: !this.props.running, className: "highlighted", onClick: this.autoPlayClicked}, "Auto-play game")
+
+				React.createElement("button", {disabled: !this.props.running, className: "highlighted", onClick: this.autoPlayClicked}, 
+					autoPlayText
+				)
 			)
 		);
 	},
 
+	/**
+	 * Initial state is that auto-play is disabled.
+	 */
+	getInitialState: function() {
+		return {
+			autoPlay: false
+		};
+	},
+
+	/**
+	 * Helper function that enables/disables auto-play.
+	 */
+	toggleAutoPlay: function() {
+		// Reset value in input field, if any.
+		var pinsInput = React.findDOMNode(this.refs.pinsInput);
+		pinsInput.value = '';
+
+		// Stop auto-play timer, if any.
+		if (this.autoPlayTimer) {
+			clearInterval(this.autoPlayTimer);
+			this.autoPlayTimer = null;
+		}
+
+		// Toggle auto-play state.
+		var autoPlay = !this.state.autoPlay;
+		this.setState({ autoPlay: autoPlay }, function() {
+			// When exiting auto-play, return focus to input element.
+			if (!autoPlay) {
+				pinsInput.value = '';
+				pinsInput.focus();
+			}
+		});
+
+		// Start timer, if enabling auto-play.
+		if (autoPlay) {
+			this.autoPlayTimer = setInterval(this.autoPlayTimerFunction, 100);
+		}
+	},
+
+	/**
+	 * Event when a roll is manually submitted.
+	 */
 	rollSubmitted: function(event) {
 		event.preventDefault();
 
@@ -436,10 +486,35 @@ var GameController = React.createClass({displayName: "GameController",
 		// Empty input element and return focus.
 		pinsInput.value = '';
 		pinsInput.focus();
+
+		// Propagate event to parent view.
+		if (this.props.onRoll) {
+			this.props.onRoll(pins);
+		}
 	},
 
+	/**
+	 * Event when the auto-play toggle button is clicked.
+	 */
 	autoPlayClicked: function(event) {
 		event.preventDefault();
+		this.toggleAutoPlay();
+	},
+
+	/**
+	 * Timer event (fires repeatedly) when auto-play is enabled.
+	 */
+	autoPlayTimerFunction: function() {
+		// Calculate random number of pins knocked down based on the number of pins remaining.
+		var pins = (Math.random() * (this.props.pinsRemaining + 1)) | 0;
+
+		// Show number of pins.
+		React.findDOMNode(this.refs.pinsInput).value = pins;
+
+		// Propagate event to parent view.
+		if (this.props.onRoll) {
+			this.props.onRoll(pins);
+		}
 	}
 
 });
@@ -520,7 +595,7 @@ var BowlingScoreApp = React.createClass({displayName: "BowlingScoreApp",
 				this.state.running ?
 
 					// Show game controller when game is running.
-					React.createElement(GameController, {pinsRemaining: 10, running: true}) :
+					React.createElement(GameController, {pinsRemaining: this.state.pinsRemaining, running: true, onRoll: this.roll}) :
 
 					// Show setup controller (to add/remove players and start game), when game is not yet running.
 					React.createElement(SetupController, {canAddPlayer: this.canAddPlayer(), canRemovePlayer: this.canRemovePlayer(), onAddPlayer: this.addPlayer, onRemovePlayer: this.removePlayer, onStartGame: this.startGame})
@@ -536,7 +611,8 @@ var BowlingScoreApp = React.createClass({displayName: "BowlingScoreApp",
 	getInitialState: function() {
 		return {
 			players: [ this.newUnnamedPlayer() ],
-			running: false
+			running: false,
+			pinsRemaining: 10
 		};
 	},
 
@@ -596,6 +672,20 @@ var BowlingScoreApp = React.createClass({displayName: "BowlingScoreApp",
 	 */
 	startGame: function() {
 		this.setState({ running: true });
+	},
+
+	/**
+	 * Event when a roll is performed.
+	 */
+	roll: function(pins) {
+		pins = Math.max(0, Math.min(this.state.pinsRemaining, pins));
+		console.log('Roll: ' + pins);
+
+		var pinsRemaining = this.state.pinsRemaining - pins;
+		if (pinsRemaining <= 0) {
+			pinsRemaining = 10;
+		}
+		this.setState({ pinsRemaining: pinsRemaining });
 	}
 
 });
