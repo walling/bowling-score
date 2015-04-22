@@ -62,7 +62,7 @@ var ScoringRow = React.createClass({
 						// Insert the number of points for each frame.
 						return (
 							<td key={rowKey + '-frame-' + index} colSpan="2" className={'points frame ' + self.frameColor(frame.frameIndex)}>
-								{frame.points || '\u00A0'}
+								{(''+[frame.points]) || '\u00A0'}
 							</td>
 						);
 					})}
