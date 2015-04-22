@@ -1,6 +1,6 @@
 # Bowling Score
 
-This small project is a scoring system for bowling games.
+This small project is a scoring system for bowling games. You can [try it online here](http://walling.github.io/bowling-score/).
 
 Implementation:
 
