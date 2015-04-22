@@ -6,6 +6,7 @@ var stylus = require('gulp-stylus');
 var small = require('small').gulp;
 var react = require('gulp-react');
 var mocha = require('gulp-mocha');
+var shell = require('gulp-shell');
 var wrap = require('gulp-wrap');
 var gulp = require('gulp');
 
@@ -67,12 +68,16 @@ gulp.task('test', function() {
 		.pipe(mocha());
 });
 
+gulp.task('lint', shell.task([
+	'node_modules/.bin/jsxhint gulpfile.js "{src,test}/**/*.js"'
+], { ignoreErrors: true }));
+
 gulp.task('watch', function() {
 	gulp.watch(paths.html, ['html']);
 	gulp.watch(paths.styles.all, ['styles']);
-	gulp.watch(paths.js.all, ['js']);
+	gulp.watch(paths.js.all, ['js', 'lint']);
 	gulp.watch(paths.thirdpartyJs.all, ['thirdparty-js']);
 });
 
-gulp.task('build', ['html', 'styles', 'js', 'thirdparty-js']);
+gulp.task('build', ['html', 'styles', 'js', 'thirdparty-js', 'lint']);
 gulp.task('default', ['build', 'watch']);

@@ -1,7 +1,7 @@
 'use strict';
 
 var React = require('react');
-var frames = require('../../logic/frames');
+var framesLogic = require('../../logic/frames');
 
 // Key codes used in keyDown event.
 var ENTER_KEY = 13;
@@ -20,19 +20,23 @@ var ScoringRow = React.createClass({
 		var rowKey = 'scoring-row-' + self.props.playerId; // key used by React
 
 		// Calculate rolls, points and total for all frames.
-		var framesData = frames.data(self.props.frames);
+		var framesData = framesLogic.data(self.props.frames);
 
 		// View for one row (ie. one player) in the scoring table.
 		return (
 			<tbody>
 				<tr>
-					{self.state.editingName
+					{self.state.editingName ?
+
 						// Either show inline editing of name using input element.
-						? <td className="edit name" rowSpan="2">
-								<input type="text" ref="nameInput" autoFocus placeholder={self.placeholderName(self.props.playerId)} defaultValue={self.props.name} onBlur={self.editNameBlur} onKeyDown={self.editNameKey} />
-							</td>
+						<td className="edit name" rowSpan="2">
+							<input type="text" ref="nameInput" autoFocus placeholder={self.placeholderName(self.props.playerId)} defaultValue={self.props.name} onBlur={self.editNameBlur} onKeyDown={self.editNameKey} />
+						</td> :
+
 						// Otherwise just show the name (or the default placeholder name, if unnamed).
-						: <td ref="name" className="name" rowSpan="2" tabIndex="0" onClick={self.nameClicked} onKeyDown={self.nameKey}>{self.props.name || self.placeholderName(self.props.playerId)}</td>
+						<td ref="name" className="name" rowSpan="2" tabIndex="0" onClick={self.nameClicked} onKeyDown={self.nameKey}>
+							{self.props.name || self.placeholderName(self.props.playerId)}
+						</td>
 					}
 
 					{framesData.rolls.map(function(roll, index) {

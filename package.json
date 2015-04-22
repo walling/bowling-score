@@ -29,8 +29,10 @@
     "gulp-mocha": "^2.0.1",
     "gulp-plumber": "^1.0.0",
     "gulp-react": "^3.0.1",
+    "gulp-shell": "^0.4.1",
     "gulp-stylus": "^2.0.1",
     "gulp-wrap": "^0.11.0",
+    "jsxhint": "^0.14.0",
     "small": "^0.1.1"
   }
 }

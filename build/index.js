@@ -46,7 +46,7 @@ var exports = {};
 'use strict';
 
 var React = __small$_mod_0;
-var frames = ((function() {
+var framesLogic = ((function() {
 var exports = {};
 'use strict';
 
@@ -167,19 +167,23 @@ var ScoringRow = React.createClass({displayName: "ScoringRow",
 		var rowKey = 'scoring-row-' + self.props.playerId; // key used by React
 
 		// Calculate rolls, points and total for all frames.
-		var framesData = frames.data(self.props.frames);
+		var framesData = framesLogic.data(self.props.frames);
 
 		// View for one row (ie. one player) in the scoring table.
 		return (
 			React.createElement("tbody", null, 
 				React.createElement("tr", null, 
-					self.state.editingName
+					self.state.editingName ?
+
 						// Either show inline editing of name using input element.
-						? React.createElement("td", {className: "edit name", rowSpan: "2"}, 
-								React.createElement("input", {type: "text", ref: "nameInput", autoFocus: true, placeholder: self.placeholderName(self.props.playerId), defaultValue: self.props.name, onBlur: self.editNameBlur, onKeyDown: self.editNameKey})
-							)
+						React.createElement("td", {className: "edit name", rowSpan: "2"}, 
+							React.createElement("input", {type: "text", ref: "nameInput", autoFocus: true, placeholder: self.placeholderName(self.props.playerId), defaultValue: self.props.name, onBlur: self.editNameBlur, onKeyDown: self.editNameKey})
+						) :
+
 						// Otherwise just show the name (or the default placeholder name, if unnamed).
-						: React.createElement("td", {ref: "name", className: "name", rowSpan: "2", tabIndex: "0", onClick: self.nameClicked, onKeyDown: self.nameKey}, self.props.name || self.placeholderName(self.props.playerId)), 
+						React.createElement("td", {ref: "name", className: "name", rowSpan: "2", tabIndex: "0", onClick: self.nameClicked, onKeyDown: self.nameKey}, 
+							self.props.name || self.placeholderName(self.props.playerId)
+						), 
 					
 
 					framesData.rolls.map(function(roll, index) {
