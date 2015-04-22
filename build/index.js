@@ -453,8 +453,9 @@ var GameController = React.createClass({displayName: "GameController",
 			this.props.pinsRemaining + ' remaining';
 
 		// Text for auto-play toggle button.
-		var autoPlayText = this.state.autoPlay ?
-			'Stop auto-play' :
+		var autoPlayText =
+			(!this.props.running) ? 'New game' :
+			this.state.autoPlay ? 'Stop auto-play' :
 			'Auto-play game';
 
 		return (
@@ -464,7 +465,7 @@ var GameController = React.createClass({displayName: "GameController",
 					React.createElement("button", {disabled: !this.props.running || this.state.autoPlay, type: "submit"}, "Next roll")
 				), 
 
-				React.createElement("button", {disabled: !this.props.running, className: "highlighted", onClick: this.autoPlayClicked}, 
+				React.createElement("button", {className: "highlighted", onClick: this.autoPlayClicked}, 
 					autoPlayText
 				)
 			)
@@ -553,10 +554,15 @@ var GameController = React.createClass({displayName: "GameController",
 
 	/**
 	 * Event when the auto-play toggle button is clicked.
+	 * A special case is when the game ended, this button creates a new game.
 	 */
 	autoPlayClicked: function(event) {
 		event.preventDefault();
-		this.toggleAutoPlay();
+		if (this.props.running) {
+			this.toggleAutoPlay();
+		} else if (this.props.onNewGame) {
+			this.props.onNewGame();
+		}
 	},
 
 	/**
@@ -801,7 +807,7 @@ var BowlingScoreApp = React.createClass({displayName: "BowlingScoreApp",
 				this.state.running ?
 
 					// Show game controller when game is running.
-					React.createElement(GameController, {pinsRemaining: this.state.pinsRemaining, running: this.state.players[0].frames.length <= 10, onRoll: this.roll}) :
+					React.createElement(GameController, {pinsRemaining: this.state.pinsRemaining, running: this.state.players[0].frames.length <= 10, onRoll: this.roll, onNewGame: this.newGame}) :
 
 					// Show setup controller (to add/remove players and start game), when game is not yet running.
 					React.createElement(SetupController, {canAddPlayer: this.canAddPlayer(), canRemovePlayer: this.canRemovePlayer(), onAddPlayer: this.addPlayer, onRemovePlayer: this.removePlayer, onStartGame: this.startGame})
@@ -896,6 +902,13 @@ var BowlingScoreApp = React.createClass({displayName: "BowlingScoreApp",
 			pinsRemaining: players.pinsRemaining,
 			players: players.advanced
 		});
+	},
+
+	/**
+	 * Event when a new game is requested.
+	 */
+	newGame: function() {
+		this.replaceState(this.getInitialState());
 	}
 
 });

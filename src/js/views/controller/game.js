@@ -19,8 +19,9 @@ var GameController = React.createClass({
 			this.props.pinsRemaining + ' remaining';
 
 		// Text for auto-play toggle button.
-		var autoPlayText = this.state.autoPlay ?
-			'Stop auto-play' :
+		var autoPlayText =
+			(!this.props.running) ? 'New game' :
+			this.state.autoPlay ? 'Stop auto-play' :
 			'Auto-play game';
 
 		return (
@@ -30,7 +31,7 @@ var GameController = React.createClass({
 					<button disabled={!this.props.running || this.state.autoPlay} type="submit">Next roll</button>
 				</form>
 
-				<button disabled={!this.props.running} className="highlighted" onClick={this.autoPlayClicked}>
+				<button className="highlighted" onClick={this.autoPlayClicked}>
 					{autoPlayText}
 				</button>
 			</section>
@@ -119,10 +120,15 @@ var GameController = React.createClass({
 
 	/**
 	 * Event when the auto-play toggle button is clicked.
+	 * A special case is when the game ended, this button creates a new game.
 	 */
 	autoPlayClicked: function(event) {
 		event.preventDefault();
-		this.toggleAutoPlay();
+		if (this.props.running) {
+			this.toggleAutoPlay();
+		} else if (this.props.onNewGame) {
+			this.props.onNewGame();
+		}
 	},
 
 	/**
