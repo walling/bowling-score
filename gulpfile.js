@@ -4,6 +4,7 @@ var htmlmin = require('gulp-htmlmin');
 var stylus = require('gulp-stylus');
 var small = require('small').gulp;
 var react = require('gulp-react');
+var mocha = require('gulp-mocha');
 var wrap = require('gulp-wrap');
 var gulp = require('gulp');
 
@@ -19,6 +20,9 @@ var paths = {
 	},
 	thirdpartyJs: {
 		all: 'thirdparty/js/*.js'
+	},
+	tests: {
+		all: 'test/**/*.test.js'
 	}
 };
 
@@ -54,6 +58,11 @@ gulp.task('js', function() {
 gulp.task('thirdparty-js', function() {
 	gulp.src(paths.thirdpartyJs.all)
 		.pipe(gulp.dest(paths.dest));
+});
+
+gulp.task('test', function() {
+	gulp.src(paths.tests.all, { read: false })
+		.pipe(mocha());
 });
 
 gulp.task('watch', function() {

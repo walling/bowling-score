@@ -19,9 +19,14 @@
     "url": "https://github.com/walling/bowling-score/issues"
   },
   "homepage": "https://github.com/walling/bowling-score",
+  "scripts": {
+    "test": "gulp test"
+  },
   "devDependencies": {
+    "chai": "^2.2.0",
     "gulp": "^3.8.11",
     "gulp-htmlmin": "^1.1.1",
+    "gulp-mocha": "^2.0.1",
     "gulp-react": "^3.0.1",
     "gulp-stylus": "^2.0.1",
     "gulp-wrap": "^0.11.0",

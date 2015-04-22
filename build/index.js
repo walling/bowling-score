@@ -46,6 +46,109 @@ var exports = {};
 'use strict';
 
 var React = __small$_mod_0;
+var frames = ((function() {
+var exports = {};
+'use strict';
+
+/*  ***** Adapted from views/scoring/row.js, but not yet tested *****
+
+function rollsData(frame, key, index) {
+	// If first roll is not a strike, the player must roll one more time.
+	if (frame.length === 1 && frame[0] < 10) {
+		frame = [frame[0], null];
+	}
+
+	if (frame.length === 1) {
+		// If there was only one roll in this frame, it must be a strike.
+		return [
+			{ frameIndex: index, key: key + '-roll', colSpan: 2, type: 'strike', knockedDown: 10 }
+		];
+
+	} else if (frame.length === 2) {
+		// It is a spare if the total number of pins knocked down is 10.
+		var first = frame[0] | 0;
+		var second = frame[1] | 0;
+		var isSpare = (first + second === 10);
+		var firstType =
+			(first === null) ? 'next' :
+			'normal';
+		var secondType =
+			isSpare ? 'spare' :
+			(first !== null && second === null) ? 'next' :
+			'normal';
+
+		// If there was two rolls in this frame, we create two columns with colspan=1.
+		return [
+			{ frameIndex: index, key: key + '-roll-1', colSpan: 1, type: firstType, knockedDown: first },
+			{ frameIndex: index, key: key + '-roll-2', colSpan: 1, type: secondType, knockedDown: second }
+		];
+
+	} else {
+		// Do not show any information in this frame.
+		return [
+			{ frameIndex: index, key: key + '-roll', colSpan: 2, type: 'empty', knockedDown: 0 }
+		];
+	}
+}
+
+function framesData(frames, key) {
+	var rolls = [];
+	var points = [];
+	var total = 0;
+
+	// Calculate points for all frames as well as total.
+	for (var index = 0; index < 10; index++) {
+		var frameKey = key + '-frame-' + index;
+		var frame = frames[index] || [];
+
+		// Collect all the rolls for the given player. We do it this way instead of a simple
+		// `.map`, since there can be either one or two rolls in each frame, so we don't know
+		// the exact number of output columns in the table beforehand.
+		rolls = rolls.concat(rollsData(frame, frameKey, index));
+
+		points.push({
+			key: frameKey + '-points',
+			points: null
+		});
+	}
+
+	return {
+		rolls: rolls,
+		points: points,
+		total: total
+	};
+}
+*/
+
+function framesData(frames) {
+	var rolls = [];
+	var points = [];
+
+	for (var index = 0; index < 10; index++) {
+		rolls.push({
+			frameIndex: index,
+			type: 'empty',
+			colSpan: 2,
+			knockedDown: 0
+		});
+
+		points.push({
+			frameIndex: index,
+			points: null
+		});
+	}
+
+	return {
+		rolls: rolls,
+		points: points,
+		total: 0
+	};
+}
+
+exports.data = framesData;
+
+return exports;
+})());
 
 // Key codes used in keyDown event.
 var ENTER_KEY = 13;
@@ -61,81 +164,51 @@ var ScoringRow = React.createClass({displayName: "ScoringRow",
 	 */
 	render: function() {
 		var self = this;
-		var rowKey = 'scoring-row-' + this.props.playerId; // key used by React
+		var rowKey = 'scoring-row-' + self.props.playerId; // key used by React
 
-		// Calculate points for all frames as well as total.
-		// TODO: Move this out in seperate module for application logic.
-		var total = 0;
-		var framesData = [];
-		for (var index = 0; index < 10; index++) {
-			framesData[index] = {
-				rolls: this.props.frames[index] || [],
-				points: null
-			};
-		}
-
-		// Collect all the rolls for the given player. We do it this way instead of a simple
-		// `.map`, since there can be either one or two rolls in each frame, so we don't know
-		// the exact number of output columns in the table beforehand.
-		// TODO: Calculate rolls in application logic to keep view logic simpler.
-		var rolls = [];
-		framesData.forEach(function(frameData, index) {
-			var rollsData = frameData.rolls;
-			var frameKey = rowKey + '-frame-' + index; // key used by React
-
-			if (rollsData.length === 1) {
-				// If there was only one roll in this frame, it must be a strike.
-				rolls.push(
-					React.createElement("td", {key: frameKey + '-roll', colSpan: "2", className: 'points rolls strike ' + self.frameColor(index)}, "×")
-				);
-
-			} else if (rollsData.length === 2) {
-				// We insert class name 'spare' if the total number of pins knocked down is 10.
-				var spare = ((rollsData[0] | 0) + (rollsData[1] | 0) === 10) ? 'spare ' : '';
-
-				// If there was two rolls in this frame, we create two columns with colspan=1.
-				rolls.push(
-					React.createElement("td", {key: frameKey + '-roll-1', colSpan: "1", className: 'points rolls ' + self.frameColor(index)}, rollsData[0]),
-					React.createElement("td", {key: frameKey + '-roll-2', colSpan: "1", className: 'points rolls ' + spare + ' ' + self.frameColor(index)}, spare ? '/' : rollsData[1])
-				);
-
-			} else {
-				// Do not show any information in this frame.
-				rolls.push(
-					React.createElement("td", {key: frameKey + '-roll', colSpan: "2", className: 'points rolls ' + self.frameColor(index)}, " ")
-				);
-			}
-		});
+		// Calculate rolls, points and total for all frames.
+		var framesData = frames.data(self.props.frames);
 
 		// View for one row (ie. one player) in the scoring table.
 		return (
 			React.createElement("tbody", null, 
 				React.createElement("tr", null, 
-					this.state.editingName
+					self.state.editingName
 						// Either show inline editing of name using input element.
 						? React.createElement("td", {className: "edit name", rowSpan: "2"}, 
-								React.createElement("input", {type: "text", ref: "nameInput", autoFocus: true, placeholder: this.placeholderName(this.props.playerId), defaultValue: this.props.name, onBlur: this.editNameBlur, onKeyDown: this.editNameKey})
+								React.createElement("input", {type: "text", ref: "nameInput", autoFocus: true, placeholder: self.placeholderName(self.props.playerId), defaultValue: self.props.name, onBlur: self.editNameBlur, onKeyDown: self.editNameKey})
 							)
 						// Otherwise just show the name (or the default placeholder name, if unnamed).
-						: React.createElement("td", {ref: "name", className: "name", rowSpan: "2", tabIndex: "0", onClick: this.nameClicked, onKeyDown: this.nameKey}, this.props.name || this.placeholderName(this.props.playerId)), 
+						: React.createElement("td", {ref: "name", className: "name", rowSpan: "2", tabIndex: "0", onClick: self.nameClicked, onKeyDown: self.nameKey}, self.props.name || self.placeholderName(self.props.playerId)), 
 					
 
-					rolls, /* display the rolls columns as calculated above */
+					framesData.rolls.map(function(roll, index) {
+						// Insert the number of knocked down pins for each roll.
+						// Strike/spare is shown in a special way.
+						return (
+							React.createElement("td", {key: rowKey + '-roll-' + index, colSpan: roll.colSpan, className: roll.type + ' points rolls ' + self.frameColor(roll.frameIndex)}, 
+									roll.type === 'normal' ? roll.knockedDown :
+									roll.type === 'strike' ? '\u00D7' :
+									roll.type === 'spare' ? '/' :
+									'\u00A0'
+							)
+						);
+					}), 
 
-					React.createElement("td", {className: "total", rowSpan: "2"}, "42")
+					React.createElement("td", {className: "total", rowSpan: "2"}, 
+						framesData.total
+					)
 				), 
+
 				React.createElement("tr", null, 
-
-					framesData.map(function(frameData, index) {
-						var frameKey = rowKey + '-frame-' + index; // key used by React
-						var text = frameData.points || '\u00A0'; // show non-breaking space if no data
-
+					framesData.points.map(function(frame, index) {
 						// Insert the number of points for each frame.
 						return (
-							React.createElement("td", {key: frameKey, colSpan: "2", className: 'points frame ' + self.frameColor(index)}, text)
+							React.createElement("td", {key: rowKey + '-frame-' + index, colSpan: "2", className: 'points frame ' + self.frameColor(frame.frameIndex)}, 
+								frame.points || '\u00A0'
+							)
 						);
 					})
-
 				)
 			)
 		);

@@ -1,6 +1,7 @@
 'use strict';
 
 var React = require('react');
+var frames = require('../../logic/frames');
 
 // Key codes used in keyDown event.
 var ENTER_KEY = 13;
@@ -16,81 +17,51 @@ var ScoringRow = React.createClass({
 	 */
 	render: function() {
 		var self = this;
-		var rowKey = 'scoring-row-' + this.props.playerId; // key used by React
+		var rowKey = 'scoring-row-' + self.props.playerId; // key used by React
 
-		// Calculate points for all frames as well as total.
-		// TODO: Move this out in seperate module for application logic.
-		var total = 0;
-		var framesData = [];
-		for (var index = 0; index < 10; index++) {
-			framesData[index] = {
-				rolls: this.props.frames[index] || [],
-				points: null
-			};
-		}
-
-		// Collect all the rolls for the given player. We do it this way instead of a simple
-		// `.map`, since there can be either one or two rolls in each frame, so we don't know
-		// the exact number of output columns in the table beforehand.
-		// TODO: Calculate rolls in application logic to keep view logic simpler.
-		var rolls = [];
-		framesData.forEach(function(frameData, index) {
-			var rollsData = frameData.rolls;
-			var frameKey = rowKey + '-frame-' + index; // key used by React
-
-			if (rollsData.length === 1) {
-				// If there was only one roll in this frame, it must be a strike.
-				rolls.push(
-					<td key={frameKey + '-roll'} colSpan="2" className={'points rolls strike ' + self.frameColor(index)}>&#215;</td>
-				);
-
-			} else if (rollsData.length === 2) {
-				// We insert class name 'spare' if the total number of pins knocked down is 10.
-				var spare = ((rollsData[0] | 0) + (rollsData[1] | 0) === 10) ? 'spare ' : '';
-
-				// If there was two rolls in this frame, we create two columns with colspan=1.
-				rolls.push(
-					<td key={frameKey + '-roll-1'} colSpan="1" className={'points rolls ' + self.frameColor(index)}>{rollsData[0]}</td>,
-					<td key={frameKey + '-roll-2'} colSpan="1" className={'points rolls ' + spare + ' ' + self.frameColor(index)}>{spare ? '/' : rollsData[1]}</td>
-				);
-
-			} else {
-				// Do not show any information in this frame.
-				rolls.push(
-					<td key={frameKey + '-roll'} colSpan="2" className={'points rolls ' + self.frameColor(index)}>&nbsp;</td>
-				);
-			}
-		});
+		// Calculate rolls, points and total for all frames.
+		var framesData = frames.data(self.props.frames);
 
 		// View for one row (ie. one player) in the scoring table.
 		return (
 			<tbody>
 				<tr>
-					{this.state.editingName
+					{self.state.editingName
 						// Either show inline editing of name using input element.
 						? <td className="edit name" rowSpan="2">
-								<input type="text" ref="nameInput" autoFocus placeholder={this.placeholderName(this.props.playerId)} defaultValue={this.props.name} onBlur={this.editNameBlur} onKeyDown={this.editNameKey} />
+								<input type="text" ref="nameInput" autoFocus placeholder={self.placeholderName(self.props.playerId)} defaultValue={self.props.name} onBlur={self.editNameBlur} onKeyDown={self.editNameKey} />
 							</td>
 						// Otherwise just show the name (or the default placeholder name, if unnamed).
-						: <td ref="name" className="name" rowSpan="2" tabIndex="0" onClick={this.nameClicked} onKeyDown={this.nameKey}>{this.props.name || this.placeholderName(this.props.playerId)}</td>
+						: <td ref="name" className="name" rowSpan="2" tabIndex="0" onClick={self.nameClicked} onKeyDown={self.nameKey}>{self.props.name || self.placeholderName(self.props.playerId)}</td>
 					}
 
-					{rolls /* display the rolls columns as calculated above */}
-
-					<td className="total" rowSpan="2">42</td>
-				</tr>
-				<tr>
-
-					{framesData.map(function(frameData, index) {
-						var frameKey = rowKey + '-frame-' + index; // key used by React
-						var text = frameData.points || '\u00A0'; // show non-breaking space if no data
-
-						// Insert the number of points for each frame.
+					{framesData.rolls.map(function(roll, index) {
+						// Insert the number of knocked down pins for each roll.
+						// Strike/spare is shown in a special way.
 						return (
-							<td key={frameKey} colSpan="2" className={'points frame ' + self.frameColor(index)}>{text}</td>
+							<td key={rowKey + '-roll-' + index} colSpan={roll.colSpan} className={roll.type + ' points rolls ' + self.frameColor(roll.frameIndex)}>
+								{	roll.type === 'normal' ? roll.knockedDown :
+									roll.type === 'strike' ? '\u00D7' :
+									roll.type === 'spare' ? '/' :
+									'\u00A0' }
+							</td>
 						);
 					})}
 
+					<td className="total" rowSpan="2">
+						{framesData.total}
+					</td>
+				</tr>
+
+				<tr>
+					{framesData.points.map(function(frame, index) {
+						// Insert the number of points for each frame.
+						return (
+							<td key={rowKey + '-frame-' + index} colSpan="2" className={'points frame ' + self.frameColor(frame.frameIndex)}>
+								{frame.points || '\u00A0'}
+							</td>
+						);
+					})}
 				</tr>
 			</tbody>
 		);
