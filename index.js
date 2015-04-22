@@ -139,12 +139,16 @@ function pointsData(rolls, frameIndex, allRolls) {
 				points: 10 + (nextRolls[0] || 0)
 			};
 		} else {
-			// Normal rolls scores number of knocked down pins.
-			return {
-				frameIndex: frameIndex,
-				type: 'normal',
-				points: rolls[0].knockedDown + rolls[1].knockedDown
-			};
+			var hasFirstRoll = (rolls[0].type === 'normal');
+			if (hasFirstRoll) {
+				// Normal rolls scores number of knocked down pins.
+				return {
+					frameIndex: frameIndex,
+					type: 'normal',
+					points: rolls[0].knockedDown + rolls[1].knockedDown
+				};
+			}
+			// If no rolls yet, just fall through.
 		}
 	}
 
@@ -253,7 +257,7 @@ var ScoringRow = React.createClass({displayName: "ScoringRow",
 						// Insert the number of points for each frame.
 						return (
 							React.createElement("td", {key: rowKey + '-frame-' + index, colSpan: "2", className: 'points frame ' + self.frameColor(frame.frameIndex)}, 
-								frame.points || '\u00A0'
+								(''+[frame.points]) || '\u00A0'
 							)
 						);
 					})
@@ -450,7 +454,7 @@ var GameController = React.createClass({displayName: "GameController",
 		// If the game ended, display that.
 		var pinsPlaceholderText =
 			(!this.props.running) ? 'Game ended' :
-			(this.props.pinsRemaining === 10) ? 'Knocked down pins' :
+			(this.props.pinsRemaining === 10) ? 'Knock down pins' :
 			this.props.pinsRemaining + ' remaining';
 
 		// Text for auto-play toggle button.
