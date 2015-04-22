@@ -45,6 +45,38 @@ describe('logic/game', function() {
 			]);
 		});
 
+		it('advances to the next player, when there is multiple players', function() {
+			game.advancePlayersToNextRoll(10, [
+				{ name: 'Player 1', frames: [ [null] ] },
+				{ name: 'Player 2', frames: [] },
+				{ name: 'Player 3', frames: [] },
+			]).advanced.should.deep.equal([
+				{ name: 'Player 1', frames: [ [10] ] },
+				{ name: 'Player 2', frames: [ [null] ] },
+				{ name: 'Player 3', frames: [] },
+			]);
+
+			game.advancePlayersToNextRoll(5, [
+				{ name: 'Player 1', frames: [ [1, 3], [10] ] },
+				{ name: 'Player 2', frames: [ [10], [5, null] ] },
+				{ name: 'Player 3', frames: [ [3, 4] ] }
+			]).advanced.should.deep.equal([
+				{ name: 'Player 1', frames: [ [1, 3], [10] ] },
+				{ name: 'Player 2', frames: [ [10], [5, 5] ] },
+				{ name: 'Player 3', frames: [ [3, 4], [null] ] }
+			]);
+
+			game.advancePlayersToNextRoll(10, [
+				{ name: 'Player 1', frames: [ [1, 3], [10] ] },
+				{ name: 'Player 2', frames: [ [10], [5, 5] ] },
+				{ name: 'Player 3', frames: [ [3, 4], [null] ] }
+			]).advanced.should.deep.equal([
+				{ name: 'Player 1', frames: [ [1, 3], [10], [null] ] },
+				{ name: 'Player 2', frames: [ [10], [5, 5] ] },
+				{ name: 'Player 3', frames: [ [3, 4], [10] ] }
+			]);
+		});
+
 	});
 
 	describe('.advanceToNextPlayer()', function() {

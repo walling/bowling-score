@@ -650,15 +650,22 @@ function advanceFramesToNextRoll(pins, frames) {
  * property `.advanced`.
  */
 function advancePlayersToNextRoll(pins, players) {
+	// Figure out the player that is currently playing.
+	var currentPlayerIndex = indexOfCurrentPlayer(players);
+
 	// Update players while keeping data immutable.
 	var advancedPlayers = clone(players);
-	advancedPlayers[0] = clone(advancedPlayers[0]);
+	advancedPlayers[currentPlayerIndex] = clone(advancedPlayers[currentPlayerIndex]);
 
-	var frames = advanceFramesToNextRoll(pins, advancedPlayers[0].frames);
-	advancedPlayers[0].frames = frames.advanced;
+	// Given the roll, advance the frames for the current player.
+	var frames = advanceFramesToNextRoll(pins, advancedPlayers[currentPlayerIndex].frames);
+	advancedPlayers[currentPlayerIndex].frames = frames.advanced;
 
+	// If it is the next players turn, advance to the next player.
 	if (frames.nextPlayer) {
-		advancedPlayers = advanceToNextPlayer(0, advancedPlayers);
+		// Calculate index of next player and make the user roll.
+		var nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
+		advancedPlayers = advanceToNextPlayer(nextPlayerIndex, advancedPlayers);
 	}
 
 	return {
