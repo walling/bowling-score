@@ -11,6 +11,7 @@ var GameController = React.createClass({
 	 * Renders this view.
 	 */
 	render: function() {
+		// If there are 10 pins remaining, show default text, otherwise the number of remaining pins.
 		var pinsPlaceholderText = (this.props.pinsRemaining === 10) ?
 			'Knocked down pins' :
 			this.props.pinsRemaining + ' remaining';
@@ -28,6 +29,8 @@ var GameController = React.createClass({
 
 	rollSubmitted: function(event) {
 		event.preventDefault();
+
+		// Get number of pins knocked down, as entered in the input field.
 		var pinsInput = React.findDOMNode(this.refs.pinsInput);
 		var pinsText = pinsInput.value.trim();
 		var pins = pinsText | 0; // convert to integer
@@ -39,6 +42,7 @@ var GameController = React.createClass({
 			return;
 		}
 
+		// Empty input element and return focus.
 		pinsInput.value = '';
 		pinsInput.focus();
 	},
