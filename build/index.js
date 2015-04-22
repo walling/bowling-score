@@ -174,13 +174,13 @@ function framesData(frames) {
 	}
 
 	// Collect all the rolls for the given player.
-	var rolls = frames.map(rollsData);
+	var allRolls = frames.map(rollsData);
 
 	// Collect points in each frame.
-	var points = rolls.map(pointsData);
+	var points = allRolls.map(pointsData);
 
 	return {
-		rolls: Array.prototype.concat.apply([], rolls),
+		rolls: Array.prototype.concat.apply([], allRolls),
 		points: points,
 		total: 0
 	};
