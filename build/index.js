@@ -25,7 +25,8 @@ var Header = React.createClass({displayName: "Header",
 	render: function() {
 		return (
 			React.createElement("header", null, 
-				React.createElement("h1", null, "Bowling Score")
+				React.createElement("h1", null, "Bowling Score"), 
+				React.createElement("p", null, "by ", React.createElement("a", {href: "https://www.bjarkewalling.com/en?utm_source=bowling-score\\&utm_medium=web\\&utm_content=header\\&utm_campaign=project", target: "_blank"}, "Bjarke Walling"))
 			)
 		);
 	}

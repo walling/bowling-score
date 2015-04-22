@@ -14,6 +14,7 @@ var Header = React.createClass({
 		return (
 			<header>
 				<h1>Bowling Score</h1>
+				<p>by <a href="https://www.bjarkewalling.com/en?utm_source=bowling-score\&utm_medium=web\&utm_content=header\&utm_campaign=project" target="_blank">Bjarke Walling</a></p>
 			</header>
 		);
 	}
