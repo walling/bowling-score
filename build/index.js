@@ -505,8 +505,12 @@ var GameController = React.createClass({displayName: "GameController",
 	 * Timer event (fires repeatedly) when auto-play is enabled.
 	 */
 	autoPlayTimerFunction: function() {
-		// Calculate random number of pins knocked down based on the number of pins remaining.
-		var pins = (Math.random() * (this.props.pinsRemaining + 1)) | 0;
+		// Calculate random number of pins knocked down between 1 and number of pins remaining.
+		// In a real game you could potentially not knock down any pins, but the specification
+		// states that the number should be between 1 and 10, although I changed it to knock
+		// down the maximum number of pins remaining. In a second roll you usually don't have
+		// all pins remaining.
+		var pins = ((Math.random() * this.props.pinsRemaining) | 0) + 1;
 
 		// Show number of pins.
 		React.findDOMNode(this.refs.pinsInput).value = pins;
