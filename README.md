@@ -30,3 +30,7 @@ gulp build
 ```
 
 If you want the project to be built continuously, just execute `gulp` without any arguments. It runs gulp in watch mode.
+
+## Testing
+
+To test the game logic, run `gulp test`.
