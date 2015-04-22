@@ -25,6 +25,9 @@ function clone(obj) {
  * rolls. A roll is an array with zero, one, or two members, namely the number of
  * knocked down pins. The special value `null` represents a new roll for the player
  * that is not yet completed.
+ *
+ * Returns an object with boolean property `.nextPlayer` and the updated frames in
+ * property `.advanced`.
  */
 function advanceFramesToNextRoll(pins, frames) {
 	// Update frames while keeping data immutable.
@@ -69,11 +72,14 @@ function advancePlayersToNextRoll(pins, players) {
 	// Update players while keeping data immutable.
 	players = clone(players);
 	players[0] = clone(players[0]);
+
 	var frames = advanceFramesToNextRoll(pins, players[0].frames);
 	players[0].frames = frames.advanced;
+
 	if (frames.nextPlayer) {
-		players[0].frames.push([null]);
+		players = advanceToNextPlayer(0, players);
 	}
+
 	return players;
 }
 
@@ -81,15 +87,18 @@ function advancePlayersToNextRoll(pins, players) {
  * Given an array of players, this functions advances the state where the first
  * player must make the first roll. A uncompleted roll is represented as the
  * null value in the frames array.
+ *
+ * Returns an updated array of players.
  */
-function advancePlayersToBeginGame(players) {
+function advanceToNextPlayer(index, players) {
 	// Update players while keeping data immutable.
 	players = clone(players);
-	players[0] = clone(players[0]);
-	players[0].frames = [[null]];
+	players[index] = clone(players[index]);
+	players[index].frames = clone(players[index].frames);
+	players[index].frames.push([null]);
 	return players;
 }
 
 exports.advancePlayersToNextRoll = advancePlayersToNextRoll;
-exports.advancePlayersToBeginGame = advancePlayersToBeginGame;
+exports.advanceToNextPlayer = advanceToNextPlayer;
 exports.advanceFramesToNextRoll = advanceFramesToNextRoll;

@@ -102,7 +102,7 @@ var BowlingScoreApp = React.createClass({
 	startGame: function() {
 		this.setState({
 			running: true,
-			players: gameLogic.advancePlayersToBeginGame(this.state.players)
+			players: gameLogic.advanceToNextPlayer(0, this.state.players)
 		});
 	},
 

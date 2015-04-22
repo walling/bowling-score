@@ -39,16 +39,16 @@ describe('logic/game', function() {
 
 	});
 
-	describe('.advancePlayersToBeginGame()', function() {
+	describe('.advanceToNextPlayer()', function() {
 
 		it('begins the game for a single player', function() {
-			var players = game.advancePlayersToBeginGame(singlePlayerFrames([]));
+			var players = game.advanceToNextPlayer(0, singlePlayerFrames([]));
 			players.should.have.length(1);
 			players[0].frames.should.deep.equal([[null]]);
 		});
 
-		it('begins the game for a single player', function() {
-			var players = game.advancePlayersToBeginGame([
+		it('begins the game for a multiple players', function() {
+			var players = game.advanceToNextPlayer(0, [
 				{ name: 'Player 1', frames: [] },
 				{ name: 'Player 2', frames: [] },
 				{ name: 'Player 3', frames: [] }
@@ -58,6 +58,20 @@ describe('logic/game', function() {
 				{ name: 'Player 1', frames: [[null]] },
 				{ name: 'Player 2', frames: [] },
 				{ name: 'Player 3', frames: [] }
+			]);
+		});
+
+		it('advances to another player', function() {
+			var players = game.advanceToNextPlayer(1, [
+				{ name: 'Player 1', frames: [ [1, 3], [10] ] },
+				{ name: 'Player 2', frames: [ [10] ] },
+				{ name: 'Player 3', frames: [ [3, 4] ] }
+			]);
+			players.should.have.length(3);
+			players.should.deep.equal([
+				{ name: 'Player 1', frames: [ [1, 3], [10] ] },
+				{ name: 'Player 2', frames: [ [10], [null] ] },
+				{ name: 'Player 3', frames: [ [3, 4] ] }
 			]);
 		});
 
