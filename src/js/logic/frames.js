@@ -52,6 +52,26 @@ function rollsData(frame, frameIndex) {
 }
 
 /**
+ * Given rolls data in a frame, this function calculates the base points, ie. the sum
+ * of the knocked down pins. It also determines the frame type: empty, normal, strike,
+ * spare.
+ */
+function pointsData(rolls, frameIndex) {
+	var framePoints = null;
+	var frameType = 'empty';
+	if (rolls.length === 2) {
+		frameType = 'normal';
+		framePoints = rolls[0].knockedDown + rolls[1].knockedDown;
+	}
+
+	return {
+		frameIndex: frameIndex,
+		type: frameType,
+		points: framePoints
+	};
+}
+
+/**
  * For given player frames, collect all rolls, frame points and total. The frames are
  * represented with an array or rolls. Rolls are represented as an array of pins
  * knocked down. Null represents the next roll. For example,
@@ -72,19 +92,8 @@ function framesData(frames) {
 		var frameRolls = rollsData(frame, frameIndex);
 		rolls = rolls.concat(frameRolls);
 
-		var framePoints = null;
-		var frameType = 'empty';
-		if (frameRolls.length === 2) {
-			frameType = 'normal';
-			framePoints = frameRolls[0].knockedDown + frameRolls[1].knockedDown;
-		}
-
 		// Collect points in each frame.
-		points.push({
-			frameIndex: frameIndex,
-			type: frameType,
-			points: framePoints
-		});
+		points.push(pointsData(frameRolls, frameIndex));
 	}
 
 	return {
