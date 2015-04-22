@@ -223,5 +223,69 @@ describe('logic/frames', function() {
 			points.should.have.property('type', 'strike');
 		});
 
+		it('adds knocked down pins for the next two rolls in a strike', function() {
+			var rolls = [
+				[
+					{ knockedDown: 3, type: 'normal' },
+					{ knockedDown: 7, type: 'spare' }
+				],
+				[
+					{ knockedDown: 10, type: 'strike' }
+				],
+				[
+					{ knockedDown: 2, type: 'normal' },
+					{ knockedDown: 0, type: 'empty' }
+				]
+			];
+			var points = frames.pointsData(rolls[1], 1, rolls);
+			points.should.have.property('points', 12);
+			points.should.have.property('type', 'strike');
+
+			rolls = [
+				[
+					{ knockedDown: 3, type: 'normal' },
+					{ knockedDown: 7, type: 'spare' }
+				],
+				[
+					{ knockedDown: 10, type: 'strike' }
+				],
+				[
+					{ knockedDown: 2, type: 'normal' },
+					{ knockedDown: 5, type: 'normal' }
+				],
+				[
+					{ knockedDown: 1, type: 'normal' },
+					{ knockedDown: 4, type: 'normal' }
+				]
+			];
+			points = frames.pointsData(rolls[1], 1, rolls);
+			points.should.have.property('points', 17);
+			points.should.have.property('type', 'strike');
+
+			rolls = [
+				[
+					{ knockedDown: 3, type: 'normal' },
+					{ knockedDown: 7, type: 'spare' }
+				],
+				[
+					{ knockedDown: 10, type: 'strike' }
+				],
+				[
+					{ knockedDown: 10, type: 'normal' }
+				],
+				[
+					{ knockedDown: 10, type: 'normal' }
+				],
+				[
+					{ knockedDown: 10, type: 'normal' }
+				]
+			];
+			points = frames.pointsData(rolls[1], 1, rolls);
+			points.should.have.property('points', 30);
+			points.should.have.property('type', 'strike');
+		});
+
+		it('adds knocked down pins for the next roll in a spare');
+
 	});
 });

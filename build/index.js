@@ -51,6 +51,13 @@ var exports = {};
 'use strict';
 
 /**
+ * The sum of two arguments.
+ */
+function sum(a, b) {
+	return a + b;
+}
+
+/**
  * Normalises the given rolls in a frame. Rolls are represented as an array of pins
  * knocked down. The result is a list of rolls as being presented in the scoreboard.
  */
@@ -106,10 +113,19 @@ function rollsData(frame, frameIndex) {
  * of the knocked down pins. It also determines the frame type: empty, normal, strike,
  * spare.
  */
-function pointsData(rolls, frameIndex) {
+function pointsData(rolls, frameIndex, allRolls) {
+	// Collect knocked down pins in the next two rolls after the current frame.
+	var nextRolls =
+		Array.prototype.concat.apply([], (allRolls || []).slice(frameIndex + 1))
+			.map(function(roll) { return roll.knockedDown; });
+
 	if (rolls.length === 1 && rolls[0].type === 'strike') {
-		// Strike roll scores 10 points.
-		return { frameIndex: frameIndex, type: 'strike', points: 10 };
+		// Strike scores 10 points plus next two rolls.
+		return {
+			frameIndex: frameIndex,
+			type: 'strike',
+			points: 10 + nextRolls.slice(0, 2).reduce(sum, 0)
+		};
 
 	} else if (rolls.length === 2) {
 		// Spare or normal rolls scores number of knocked down pins (which is 10 for spare).
