@@ -22,7 +22,7 @@ var BowlingScoreApp = React.createClass({
 
 				{this.state.running ?
 
-					// Show no controller when game is running. TODO: Show a game controller.
+					// Show no controller when game is running.
 					<GameController pinsRemaining={10} /> :
 
 					// Show setup controller (to add/remove players and start game), when game is not yet running.
