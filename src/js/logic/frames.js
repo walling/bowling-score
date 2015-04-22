@@ -65,17 +65,25 @@ function framesData(frames) {
 	var rolls = [];
 	var points = [];
 
-	for (var index = 0; index < 10; index++) {
-		var frame = frames[index] || [];
+	for (var frameIndex = 0; frameIndex < 10; frameIndex++) {
+		var frame = frames[frameIndex] || [];
 
 		// Collect all the rolls for the given player.
-		var frameRolls = rollsData(frame, index);
+		var frameRolls = rollsData(frame, frameIndex);
 		rolls = rolls.concat(frameRolls);
+
+		var framePoints = null;
+		var frameType = 'empty';
+		if (frameRolls.length === 2) {
+			frameType = 'normal';
+			framePoints = frameRolls[0].knockedDown + frameRolls[1].knockedDown;
+		}
 
 		// Collect points in each frame.
 		points.push({
-			frameIndex: index,
-			points: null
+			frameIndex: frameIndex,
+			type: frameType,
+			points: framePoints
 		});
 	}
 

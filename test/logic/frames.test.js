@@ -29,6 +29,9 @@ describe('logic/frames', function() {
 			framesData.should.have.deep.property('points[0].points', null);
 			framesData.should.have.deep.property('points[3].points', null);
 			framesData.should.have.deep.property('points[9].points', null);
+			framesData.should.have.deep.property('points[0].type', 'empty');
+			framesData.should.have.deep.property('points[3].type', 'empty');
+			framesData.should.have.deep.property('points[9].type', 'empty');
 			framesData.should.have.deep.property('points[0].frameIndex', 0);
 			framesData.should.have.deep.property('points[3].frameIndex', 3);
 			framesData.should.have.deep.property('points[9].frameIndex', 9);
@@ -59,6 +62,32 @@ describe('logic/frames', function() {
 			framesData.should.have.deep.property('rolls[1].frameIndex', 0);
 			framesData.should.have.deep.property('rolls[2].frameIndex', 1);
 			framesData.should.have.deep.property('rolls[3].frameIndex', 2);
+		});
+
+		it('accepts a list of frames and provides a list of points', function() {
+			var framesData = frames.data([
+				[3, 5], [3, 2]
+			]);
+			framesData.should.have.deep.property('points[0].points', 8);
+			framesData.should.have.deep.property('points[1].points', 5);
+			framesData.should.have.deep.property('points[2].points', null);
+			framesData.should.have.deep.property('points[0].type', 'normal');
+			framesData.should.have.deep.property('points[1].type', 'normal');
+			framesData.should.have.deep.property('points[2].type', 'empty');
+
+			framesData = frames.data([
+				[1, 1], [6, 1], [4, 3], [0, 2]
+			]);
+			framesData.should.have.deep.property('points[0].points', 2);
+			framesData.should.have.deep.property('points[1].points', 7);
+			framesData.should.have.deep.property('points[2].points', 7);
+			framesData.should.have.deep.property('points[3].points', 2);
+			framesData.should.have.deep.property('points[4].points', null);
+			framesData.should.have.deep.property('points[0].type', 'normal');
+			framesData.should.have.deep.property('points[1].type', 'normal');
+			framesData.should.have.deep.property('points[2].type', 'normal');
+			framesData.should.have.deep.property('points[3].type', 'normal');
+			framesData.should.have.deep.property('points[4].type', 'empty');
 		});
 
 	});
