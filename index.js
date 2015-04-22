@@ -26,7 +26,7 @@ var Header = React.createClass({displayName: "Header",
 		return (
 			React.createElement("header", null, 
 				React.createElement("h1", null, "Bowling Score"), 
-				React.createElement("p", null, "by ", React.createElement("a", {href: "https://www.bjarkewalling.com/en?utm_source=bowling-score\\&utm_medium=web\\&utm_content=header\\&utm_campaign=project", target: "_blank"}, "Bjarke Walling"))
+				React.createElement("p", null, "by ", React.createElement("a", {href: "https://www.bjarkewalling.com/en?utm_source=bowling-score&utm_medium=web&utm_content=header&utm_campaign=project", target: "_blank"}, "Bjarke Walling"))
 			)
 		);
 	}
@@ -225,7 +225,7 @@ var ScoringRow = React.createClass({displayName: "ScoringRow",
 						) :
 
 						// Otherwise just show the name (or the default placeholder name, if unnamed).
-						React.createElement("td", {ref: "name", className: "name", rowSpan: "2", tabIndex: "0", onClick: self.nameClicked, onKeyDown: self.nameKey}, 
+						React.createElement("td", {ref: "name", className: "name", rowSpan: "2", tabIndex: "0", onClick: self.nameClicked, onKeyDown: self.nameKey, title: self.props.name}, 
 							self.props.name || self.placeholderName(self.props.playerId)
 						), 
 					
