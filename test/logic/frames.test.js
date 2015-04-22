@@ -76,11 +76,11 @@ describe('logic/frames', function() {
 			framesData.should.have.deep.property('points[2].type', 'empty');
 
 			framesData = frames.data([
-				[1, 1], [6, 1], [4, 3], [0, 2]
+				[1, 1], [6, 1], [0, 0], [0, 2]
 			]);
 			framesData.should.have.deep.property('points[0].points', 2);
 			framesData.should.have.deep.property('points[1].points', 7);
-			framesData.should.have.deep.property('points[2].points', 7);
+			framesData.should.have.deep.property('points[2].points', 0);
 			framesData.should.have.deep.property('points[3].points', 2);
 			framesData.should.have.deep.property('points[4].points', null);
 			framesData.should.have.deep.property('points[0].type', 'normal');
@@ -163,6 +163,17 @@ describe('logic/frames', function() {
 			rollsData.should.have.deep.property('[1].colSpan', 1);
 		});
 
+		it('acceps a frame with a two nil rolls', function() {
+			var rollsData = frames.rollsData([0, 0], 0);
+			rollsData.should.have.length(2);
+			rollsData.should.have.deep.property('[0].knockedDown', 0);
+			rollsData.should.have.deep.property('[0].type', 'normal');
+			rollsData.should.have.deep.property('[0].colSpan', 1);
+			rollsData.should.have.deep.property('[1].knockedDown', 0);
+			rollsData.should.have.deep.property('[1].type', 'normal');
+			rollsData.should.have.deep.property('[1].colSpan', 1);
+		});
+
 		it('acceps a frame with a two rolls that is a spare', function() {
 			var rollsData = frames.rollsData([2, 8], 0);
 			rollsData.should.have.length(2);
@@ -218,6 +229,15 @@ describe('logic/frames', function() {
 				{ knockedDown: 8, type: 'normal' }
 			]);
 			points.should.have.property('points', 9);
+			points.should.have.property('type', 'normal');
+		});
+
+		it('sums up 0 points for two nil rolls', function() {
+			var points = frames.pointsData([
+				{ knockedDown: 0, type: 'normal' },
+				{ knockedDown: 0, type: 'normal' }
+			]);
+			points.should.have.property('points', 0);
 			points.should.have.property('type', 'normal');
 		});
 
