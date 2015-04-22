@@ -173,4 +173,55 @@ describe('logic/frames', function() {
 		});
 
 	});
+
+	describe('.pointsData()', function() {
+
+		it('accepts a frame index', function() {
+			frames.pointsData([], 3).should.have.property('frameIndex', 3);
+			frames.pointsData([], 4).should.have.property('frameIndex', 4);
+			frames.pointsData([{}], 7).should.have.property('frameIndex', 7);
+			frames.pointsData([{}, {}], 8).should.have.property('frameIndex', 8);
+		});
+
+		it('sums up points for two normal rolls', function() {
+			var points = frames.pointsData([
+				{ knockedDown: 2, type: 'normal' },
+				{ knockedDown: 3, type: 'normal' }
+			]);
+			points.should.have.property('points', 5);
+			points.should.have.property('type', 'normal');
+
+			points = frames.pointsData([
+				{ knockedDown: 1, type: 'normal' },
+				{ knockedDown: 8, type: 'normal' }
+			]);
+			points.should.have.property('points', 9);
+			points.should.have.property('type', 'normal');
+		});
+
+		it('sums up points for spare rolls', function() {
+			var points = frames.pointsData([
+				{ knockedDown: 2, type: 'normal' },
+				{ knockedDown: 8, type: 'spare' }
+			]);
+			points.should.have.property('points', 10);
+			points.should.have.property('type', 'spare');
+
+			points = frames.pointsData([
+				{ knockedDown: 1, type: 'normal' },
+				{ knockedDown: 9, type: 'normal' }
+			]);
+			points.should.have.property('points', 10);
+			points.should.have.property('type', 'spare');
+		});
+
+		it('sums up points for strike rolls', function() {
+			var points = frames.pointsData([
+				{ knockedDown: 10, type: 'strike' }
+			]);
+			points.should.have.property('points', 10);
+			points.should.have.property('type', 'strike');
+		});
+
+	});
 });

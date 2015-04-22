@@ -107,17 +107,26 @@ function rollsData(frame, frameIndex) {
  * spare.
  */
 function pointsData(rolls, frameIndex) {
-	var framePoints = null;
-	var frameType = 'empty';
-	if (rolls.length === 2) {
-		frameType = 'normal';
-		framePoints = rolls[0].knockedDown + rolls[1].knockedDown;
+	if (rolls.length === 1 && rolls[0].type === 'strike') {
+		// Strike roll scores 10 points.
+		return { frameIndex: frameIndex, type: 'strike', points: 10 };
+
+	} else if (rolls.length === 2) {
+		// Spare or normal rolls scores number of knocked down pins (which is 10 for spare).
+		var totalKnockedDown = rolls[0].knockedDown + rolls[1].knockedDown;
+
+		return {
+			frameIndex: frameIndex,
+			type: (totalKnockedDown === 10) ? 'spare' : 'normal',
+			points: totalKnockedDown
+		};
 	}
 
+	// Frame is not yet completed.
 	return {
 		frameIndex: frameIndex,
-		type: frameType,
-		points: framePoints
+		type: 'empty',
+		points: null
 	};
 }
 
@@ -154,6 +163,7 @@ function framesData(frames) {
 }
 
 exports.rollsData = rollsData;
+exports.pointsData = pointsData;
 exports.data = framesData;
 
 return exports;
