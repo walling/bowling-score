@@ -124,4 +124,34 @@ describe('logic/game', function() {
 		});
 
 	});
+
+	describe('.indexOfCurrentPlayer()', function() {
+
+		it('always returns 0 for a single player game', function() {
+			game.indexOfCurrentPlayer(singlePlayerFrames([])).should.equal(0);
+			game.indexOfCurrentPlayer(singlePlayerFrames([ [10] ])).should.equal(0);
+			game.indexOfCurrentPlayer(singlePlayerFrames([ [9, 1], [null] ])).should.equal(0);
+		});
+
+		it('returns the first player in the list that did not roll yet', function() {
+			game.indexOfCurrentPlayer([
+				{ name: 'Player 1', frames: [ [null] ] },
+				{ name: 'Player 2', frames: [] },
+				{ name: 'Player 3', frames: [] }
+			]).should.equal(0);
+
+			game.indexOfCurrentPlayer([
+				{ name: 'Player 1', frames: [ [1, 3] ] },
+				{ name: 'Player 2', frames: [ [null] ] },
+				{ name: 'Player 3', frames: [] }
+			]).should.equal(1);
+
+			game.indexOfCurrentPlayer([
+				{ name: 'Player 1', frames: [ [1, 3], [10] ] },
+				{ name: 'Player 2', frames: [ [10], [0, 3] ] },
+				{ name: 'Player 3', frames: [ [1, 9], [null] ] }
+			]).should.equal(2);
+		});
+
+	});
 });

@@ -683,9 +683,30 @@ function advanceToNextPlayer(index, players) {
 	return players;
 }
 
+/**
+ * Given an array of players, return the index of the player with the next roll.
+ */
+function indexOfCurrentPlayer(players) {
+	var framesLength = players[0].frames.length;
+
+	// Iterate through players. The first player that have played fewer frames is
+	// still waiting, so pick the player before.
+	for (var index = 1; index < players.length; index++) {
+		var frames = players[index].frames;
+		if (frames.length < framesLength) {
+			return index - 1; // pick the player before
+		}
+	}
+
+	// If all players have played an equal number of frames, it is the last players turn.
+	// Remember that the last player has a frame containing null.
+	return players.length - 1;
+}
+
 exports.advancePlayersToNextRoll = advancePlayersToNextRoll;
-exports.advanceToNextPlayer = advanceToNextPlayer;
 exports.advanceFramesToNextRoll = advanceFramesToNextRoll;
+exports.advanceToNextPlayer = advanceToNextPlayer;
+exports.indexOfCurrentPlayer = indexOfCurrentPlayer;
 
 return exports;
 })());
