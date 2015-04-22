@@ -5,6 +5,7 @@ var Header = require('./header');
 var Scoring = require('./scoring');
 var GameController = require('./controller/game');
 var SetupController = require('./controller/setup');
+var gameLogic = require('../logic/game');
 
 /**
  * View for the app.
@@ -99,7 +100,10 @@ var BowlingScoreApp = React.createClass({
 	 * Event when start game is clicked.
 	 */
 	startGame: function() {
-		this.setState({ running: true });
+		this.setState({
+			running: true,
+			players: gameLogic.advanceToNextRoll(this.state.players)
+		});
 	},
 
 	/**
