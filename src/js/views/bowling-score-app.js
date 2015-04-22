@@ -3,6 +3,7 @@
 var React = require('react');
 var Header = require('./header');
 var Scoring = require('./scoring');
+var GameController = require('./controller/game');
 var SetupController = require('./controller/setup');
 
 /**
@@ -22,7 +23,7 @@ var BowlingScoreApp = React.createClass({
 				{this.state.running ?
 
 					// Show no controller when game is running. TODO: Show a game controller.
-					[] :
+					<GameController pinsRemaining={10} /> :
 
 					// Show setup controller (to add/remove players and start game), when game is not yet running.
 					<SetupController canAddPlayer={this.canAddPlayer()} canRemovePlayer={this.canRemovePlayer()} onAddPlayer={this.addPlayer} onRemovePlayer={this.removePlayer} onStartGame={this.startGame} />

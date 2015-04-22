@@ -387,6 +387,63 @@ exports = Scoring;
 
 return exports;
 })());
+var GameController = ((function() {
+var exports = {};
+'use strict';
+
+var React = __small$_mod_0;
+
+/**
+ * View for the controller.
+ */
+var GameController = React.createClass({displayName: "GameController",
+
+	/**
+	 * Renders this view.
+	 */
+	render: function() {
+		var pinsPlaceholderText = (this.props.pinsRemaining === 10) ?
+			'Knocked down pins' :
+			this.props.pinsRemaining + ' remaining';
+
+		return (
+			React.createElement("section", {className: "game controller"}, 
+				React.createElement("form", {noValidate: true, onSubmit: this.rollSubmitted}, 
+					React.createElement("input", {ref: "pinsInput", autoFocus: true, type: "number", min: "0", max: this.props.pinsRemaining, step: "1", required: true, placeholder: pinsPlaceholderText}), 
+					React.createElement("button", {type: "submit"}, "Next roll")
+				), 
+				React.createElement("button", {className: "highlighted", onClick: this.autoPlayClicked}, "Auto-play game")
+			)
+		);
+	},
+
+	rollSubmitted: function(event) {
+		event.preventDefault();
+		var pinsInput = React.findDOMNode(this.refs.pinsInput);
+		var pinsText = pinsInput.value.trim();
+		var pins = pinsText | 0; // convert to integer
+
+		// Number of knocked down pins must be an integer between 0 and pins remaining.
+		if (!(/^[0-9]{1,2}$/.test(pinsText) && pins >= 0 && pins <= this.props.pinsRemaining)) {
+			pinsInput.select();
+			pinsInput.focus();
+			return;
+		}
+
+		pinsInput.value = '';
+		pinsInput.focus();
+	},
+
+	autoPlayClicked: function(event) {
+		event.preventDefault();
+	}
+
+});
+
+exports = GameController;
+
+return exports;
+})());
 var SetupController = ((function() {
 var exports = {};
 'use strict';
@@ -459,7 +516,7 @@ var BowlingScoreApp = React.createClass({displayName: "BowlingScoreApp",
 				this.state.running ?
 
 					// Show no controller when game is running. TODO: Show a game controller.
-					[] :
+					React.createElement(GameController, {pinsRemaining: 10}) :
 
 					// Show setup controller (to add/remove players and start game), when game is not yet running.
 					React.createElement(SetupController, {canAddPlayer: this.canAddPlayer(), canRemovePlayer: this.canRemovePlayer(), onAddPlayer: this.addPlayer, onRemovePlayer: this.removePlayer, onStartGame: this.startGame})
