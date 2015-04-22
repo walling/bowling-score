@@ -144,16 +144,21 @@ function framesData(frames) {
 	var rolls = [];
 	var points = [];
 
-	for (var frameIndex = 0; frameIndex < 10; frameIndex++) {
-		var frame = frames[frameIndex] || [];
+	// Shallow clone frames, so we do not mutate the original object.
+	// Ensure that there are precisely ten frames. Insert empty frames as necessary.
+	frames = frames.slice(0, 10);
+	for (var i = 0; i < 10; i++) {
+		frames[i] = frames[i] || [];
+	}
 
+	frames.forEach(function(frame, frameIndex) {
 		// Collect all the rolls for the given player.
 		var frameRolls = rollsData(frame, frameIndex);
 		rolls = rolls.concat(frameRolls);
 
 		// Collect points in each frame.
 		points.push(pointsData(frameRolls, frameIndex));
-	}
+	});
 
 	return {
 		rolls: rolls,
