@@ -8,14 +8,14 @@ var SetupController = require('./controller/setup');
 /**
  * View for the app.
  */
-var App = React.createClass({
+var BowlingScoreApp = React.createClass({
 
 	/**
 	 * Renders this view.
 	 */
 	render: function() {
 		return (
-			<section className="app">
+			<section className="bowling-score-app">
 				<Header/>
 				<Scoring players={this.state.players} onNameChange={this.nameChanged} />
 
@@ -102,4 +102,4 @@ var App = React.createClass({
 
 });
 
-module.exports = App;
+module.exports = BowlingScoreApp;

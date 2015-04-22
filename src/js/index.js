@@ -1,7 +1,7 @@
 'use strict';
 
 var React = require('react');
-var App = require('./views/app');
+var BowlingScoreApp = require('./views/bowling-score-app');
 
 // Render the app.
-React.render(<App/>, document.body);
+React.render(<BowlingScoreApp/>, document.body);

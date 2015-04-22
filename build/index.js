@@ -3,7 +3,7 @@ var exports = {};
 'use strict';
 
 var React = __small$_mod_0;
-var App = ((function() {
+var BowlingScoreApp = ((function() {
 var exports = {};
 'use strict';
 
@@ -445,14 +445,14 @@ return exports;
 /**
  * View for the app.
  */
-var App = React.createClass({displayName: "App",
+var BowlingScoreApp = React.createClass({displayName: "BowlingScoreApp",
 
 	/**
 	 * Renders this view.
 	 */
 	render: function() {
 		return (
-			React.createElement("section", {className: "app"}, 
+			React.createElement("section", {className: "bowling-score-app"}, 
 				React.createElement(Header, null), 
 				React.createElement(Scoring, {players: this.state.players, onNameChange: this.nameChanged}), 
 
@@ -539,13 +539,13 @@ var App = React.createClass({displayName: "App",
 
 });
 
-exports = App;
+exports = BowlingScoreApp;
 
 return exports;
 })());
 
 // Render the app.
-React.render(React.createElement(App, null), document.body);
+React.render(React.createElement(BowlingScoreApp, null), document.body);
 
 return exports;
 })(window.React);; }());
