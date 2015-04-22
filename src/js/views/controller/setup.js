@@ -15,7 +15,7 @@ var SetupController = React.createClass({
 			<section className="setup controller">
 				<button disabled={!this.props.canAddPlayer} onClick={this.addPlayerClicked}>Add player</button>
 				<button disabled={!this.props.canRemovePlayer} onClick={this.removePlayerClicked}>Remove player</button>
-				<button className="highlighted">Start game</button>
+				<button className="highlighted" onClick={this.startGameClicked}>Start game</button>
 			</section>
 		);
 	},
@@ -34,6 +34,14 @@ var SetupController = React.createClass({
 	removePlayerClicked: function(event) {
 		event.preventDefault();
 		this.props.onRemovePlayer();
+	},
+
+	/**
+	 * Event when Start Game button is clicked.
+	 */
+	startGameClicked: function(event) {
+		event.preventDefault();
+		this.props.onStartGame();
 	}
 
 });

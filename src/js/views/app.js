@@ -18,17 +18,27 @@ var App = React.createClass({
 			<section className="app">
 				<Header/>
 				<Scoring players={this.state.players} onNameChange={this.nameChanged} />
-				<SetupController canAddPlayer={this.canAddPlayer()} canRemovePlayer={this.canRemovePlayer()} onAddPlayer={this.addPlayer} onRemovePlayer={this.removePlayer} onStartGame={this.startGame} />
+
+				{this.state.running ?
+
+					// Show no controller when game is running. TODO: Show a game controller.
+					[] :
+
+					// Show setup controller (to add/remove players and start game), when game is not yet running.
+					<SetupController canAddPlayer={this.canAddPlayer()} canRemovePlayer={this.canRemovePlayer()} onAddPlayer={this.addPlayer} onRemovePlayer={this.removePlayer} onStartGame={this.startGame} />
+				}
+
 			</section>
 		);
 	},
 
 	/**
-	 * Initial state of the app is just a single unnamed player.
+	 * Initial state of the app is just a single unnamed player, and game is not yet running.
 	 */
 	getInitialState: function() {
 		return {
-			players: [ this.newUnnamedPlayer() ]
+			players: [ this.newUnnamedPlayer() ],
+			running: false
 		};
 	},
 
@@ -81,6 +91,13 @@ var App = React.createClass({
 		if (this.canRemovePlayer()) {
 			this.setState({ players: this.state.players.slice(0, -1) });
 		}
+	},
+
+	/**
+	 * Event when start game is clicked.
+	 */
+	startGame: function() {
+		this.setState({ running: true });
 	}
 
 });

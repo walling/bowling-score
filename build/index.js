@@ -406,7 +406,7 @@ var SetupController = React.createClass({displayName: "SetupController",
 			React.createElement("section", {className: "setup controller"}, 
 				React.createElement("button", {disabled: !this.props.canAddPlayer, onClick: this.addPlayerClicked}, "Add player"), 
 				React.createElement("button", {disabled: !this.props.canRemovePlayer, onClick: this.removePlayerClicked}, "Remove player"), 
-				React.createElement("button", {className: "highlighted"}, "Start game")
+				React.createElement("button", {className: "highlighted", onClick: this.startGameClicked}, "Start game")
 			)
 		);
 	},
@@ -425,6 +425,14 @@ var SetupController = React.createClass({displayName: "SetupController",
 	removePlayerClicked: function(event) {
 		event.preventDefault();
 		this.props.onRemovePlayer();
+	},
+
+	/**
+	 * Event when Start Game button is clicked.
+	 */
+	startGameClicked: function(event) {
+		event.preventDefault();
+		this.props.onStartGame();
 	}
 
 });
@@ -447,17 +455,27 @@ var App = React.createClass({displayName: "App",
 			React.createElement("section", {className: "app"}, 
 				React.createElement(Header, null), 
 				React.createElement(Scoring, {players: this.state.players, onNameChange: this.nameChanged}), 
-				React.createElement(SetupController, {canAddPlayer: this.canAddPlayer(), canRemovePlayer: this.canRemovePlayer(), onAddPlayer: this.addPlayer, onRemovePlayer: this.removePlayer, onStartGame: this.startGame})
+
+				this.state.running ?
+
+					// Show no controller when game is running. TODO: Show a game controller.
+					[] :
+
+					// Show setup controller (to add/remove players and start game), when game is not yet running.
+					React.createElement(SetupController, {canAddPlayer: this.canAddPlayer(), canRemovePlayer: this.canRemovePlayer(), onAddPlayer: this.addPlayer, onRemovePlayer: this.removePlayer, onStartGame: this.startGame})
+				
+
 			)
 		);
 	},
 
 	/**
-	 * Initial state of the app is just a single unnamed player.
+	 * Initial state of the app is just a single unnamed player, and game is not yet running.
 	 */
 	getInitialState: function() {
 		return {
-			players: [ this.newUnnamedPlayer() ]
+			players: [ this.newUnnamedPlayer() ],
+			running: false
 		};
 	},
 
@@ -510,6 +528,13 @@ var App = React.createClass({displayName: "App",
 		if (this.canRemovePlayer()) {
 			this.setState({ players: this.state.players.slice(0, -1) });
 		}
+	},
+
+	/**
+	 * Event when start game is clicked.
+	 */
+	startGame: function() {
+		this.setState({ running: true });
 	}
 
 });
