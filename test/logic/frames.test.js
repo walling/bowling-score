@@ -90,6 +90,28 @@ describe('logic/frames', function() {
 			framesData.should.have.deep.property('points[4].type', 'empty');
 		});
 
+		it('accepts a list of frames and provides total points', function() {
+			frames.data([
+				[3, 5], [3, 2]
+			]).should.have.deep.property('total', 8 + 5);
+
+			frames.data([
+				[9, 1], [3, 2]
+			]).should.have.deep.property('total', 13 + 5);
+
+			frames.data([
+				[10], [9, 1], [3, 2]
+			]).should.have.deep.property('total', 20 + 13 + 5);
+
+			frames.data([
+				[3, 7], [9, 1], [7, 2]
+			]).should.have.deep.property('total', 19 + 17 + 9);
+
+			frames.data([
+				[10], [10], [10], [7, 2]
+			]).should.have.deep.property('total', 30 + 27 + 19 + 9);
+		});
+
 	});
 
 	describe('.rollsData()', function() {

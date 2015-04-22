@@ -182,7 +182,7 @@ function framesData(frames) {
 	return {
 		rolls: Array.prototype.concat.apply([], allRolls),
 		points: points,
-		total: 0
+		total: points.map(function(frame) { return frame.points; }).reduce(sum, 0)
 	};
 }
 
