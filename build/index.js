@@ -128,14 +128,23 @@ function pointsData(rolls, frameIndex, allRolls) {
 		};
 
 	} else if (rolls.length === 2) {
-		// Spare or normal rolls scores number of knocked down pins (which is 10 for spare).
-		var totalKnockedDown = rolls[0].knockedDown + rolls[1].knockedDown;
+		// Two rolls, either normal or spare.
 
-		return {
-			frameIndex: frameIndex,
-			type: (totalKnockedDown === 10) ? 'spare' : 'normal',
-			points: totalKnockedDown
-		};
+		if (rolls[1].type === 'spare') {
+			// Spare scores 10 points plus next roll.
+			return {
+				frameIndex: frameIndex,
+				type: 'spare',
+				points: 10 + (nextRolls[0] || 0)
+			};
+		} else {
+			// Normal rolls scores number of knocked down pins.
+			return {
+				frameIndex: frameIndex,
+				type: 'normal',
+				points: rolls[0].knockedDown + rolls[1].knockedDown
+			};
+		}
 	}
 
 	// Frame is not yet completed.
