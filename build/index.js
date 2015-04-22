@@ -410,10 +410,10 @@ var GameController = React.createClass({displayName: "GameController",
 		return (
 			React.createElement("section", {className: "game controller"}, 
 				React.createElement("form", {noValidate: true, onSubmit: this.rollSubmitted}, 
-					React.createElement("input", {ref: "pinsInput", autoFocus: true, type: "number", min: "0", max: this.props.pinsRemaining, step: "1", required: true, placeholder: pinsPlaceholderText}), 
-					React.createElement("button", {type: "submit"}, "Next roll")
+					React.createElement("input", {disabled: !this.props.running, ref: "pinsInput", autoFocus: true, type: "number", min: "0", max: this.props.pinsRemaining, step: "1", required: true, placeholder: pinsPlaceholderText}), 
+					React.createElement("button", {disabled: !this.props.running, type: "submit"}, "Next roll")
 				), 
-				React.createElement("button", {className: "highlighted", onClick: this.autoPlayClicked}, "Auto-play game")
+				React.createElement("button", {disabled: !this.props.running, className: "highlighted", onClick: this.autoPlayClicked}, "Auto-play game")
 			)
 		);
 	},
@@ -520,7 +520,7 @@ var BowlingScoreApp = React.createClass({displayName: "BowlingScoreApp",
 				this.state.running ?
 
 					// Show game controller when game is running.
-					React.createElement(GameController, {pinsRemaining: 10}) :
+					React.createElement(GameController, {pinsRemaining: 10, running: true}) :
 
 					// Show setup controller (to add/remove players and start game), when game is not yet running.
 					React.createElement(SetupController, {canAddPlayer: this.canAddPlayer(), canRemovePlayer: this.canRemovePlayer(), onAddPlayer: this.addPlayer, onRemovePlayer: this.removePlayer, onStartGame: this.startGame})

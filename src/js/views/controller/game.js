@@ -19,10 +19,10 @@ var GameController = React.createClass({
 		return (
 			<section className="game controller">
 				<form noValidate onSubmit={this.rollSubmitted}>
-					<input ref="pinsInput" autoFocus type="number" min="0" max={this.props.pinsRemaining} step="1" required placeholder={pinsPlaceholderText} />
-					<button type="submit">Next roll</button>
+					<input disabled={!this.props.running} ref="pinsInput" autoFocus type="number" min="0" max={this.props.pinsRemaining} step="1" required placeholder={pinsPlaceholderText} />
+					<button disabled={!this.props.running} type="submit">Next roll</button>
 				</form>
-				<button className="highlighted" onClick={this.autoPlayClicked}>Auto-play game</button>
+				<button disabled={!this.props.running} className="highlighted" onClick={this.autoPlayClicked}>Auto-play game</button>
 			</section>
 		);
 	},
