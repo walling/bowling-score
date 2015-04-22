@@ -70,7 +70,17 @@ gulp.task('test', function() {
 
 gulp.task('lint', shell.task([
 	'node_modules/.bin/jsxhint gulpfile.js "{src,test}/**/*.js"'
-], { ignoreErrors: true }));
+], { ignoreErrors: true, cwd: __dirname }));
+
+gulp.task('publish', shell.task([
+	'cp -a build build-publish',
+	'git checkout gh-pages',
+	'mv build-publish/* .',
+	'git commit -a -m "Publishing webpage."',
+	'git push origin gh-pages',
+	'git checkout master',
+	'rmdir build-publish'
+], { cwd: __dirname }));
 
 gulp.task('watch', function() {
 	gulp.watch(paths.html, ['html']);
