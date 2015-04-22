@@ -15,7 +15,7 @@ var GameController = React.createClass({
 		// If the game ended, display that.
 		var pinsPlaceholderText =
 			(!this.props.running) ? 'Game ended' :
-			(this.props.pinsRemaining === 10) ? 'Knocked down pins' :
+			(this.props.pinsRemaining === 10) ? 'Knock down pins' :
 			this.props.pinsRemaining + ' remaining';
 
 		// Text for auto-play toggle button.
