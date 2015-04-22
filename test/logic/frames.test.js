@@ -216,6 +216,28 @@ describe('logic/frames', function() {
 			frames.pointsData([{}, {}], 8).should.have.property('frameIndex', 8);
 		});
 
+		it('give no points for no rolls', function() {
+			var points = frames.pointsData([
+				{ knockedDown: 0, type: 'empty' }
+			]);
+			points.should.have.property('points', null);
+			points.should.have.property('type', 'empty');
+
+			points = frames.pointsData([
+				{ knockedDown: 0, type: 'empty' },
+				{ knockedDown: 0, type: 'empty' },
+			]);
+			points.should.have.property('points', null);
+			points.should.have.property('type', 'empty');
+
+			points = frames.pointsData([
+				{ knockedDown: 0, type: 'next' },
+				{ knockedDown: 0, type: 'empty' }
+			]);
+			points.should.have.property('points', null);
+			points.should.have.property('type', 'empty');
+		});
+
 		it('sums up points for two normal rolls', function() {
 			var points = frames.pointsData([
 				{ knockedDown: 2, type: 'normal' },

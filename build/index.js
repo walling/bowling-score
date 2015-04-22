@@ -139,12 +139,16 @@ function pointsData(rolls, frameIndex, allRolls) {
 				points: 10 + (nextRolls[0] || 0)
 			};
 		} else {
-			// Normal rolls scores number of knocked down pins.
-			return {
-				frameIndex: frameIndex,
-				type: 'normal',
-				points: rolls[0].knockedDown + rolls[1].knockedDown
-			};
+			var hasFirstRoll = (rolls[0].type === 'normal');
+			if (hasFirstRoll) {
+				// Normal rolls scores number of knocked down pins.
+				return {
+					frameIndex: frameIndex,
+					type: 'normal',
+					points: rolls[0].knockedDown + rolls[1].knockedDown
+				};
+			}
+			// If no rolls yet, just fall through.
 		}
 	}
 
