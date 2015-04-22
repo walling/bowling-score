@@ -225,7 +225,7 @@ var ScoringRow = React.createClass({displayName: "ScoringRow",
 						) :
 
 						// Otherwise just show the name (or the default placeholder name, if unnamed).
-						React.createElement("td", {ref: "name", className: "name", rowSpan: "2", tabIndex: "0", onClick: self.nameClicked, onKeyDown: self.nameKey}, 
+						React.createElement("td", {ref: "name", className: "name", rowSpan: "2", tabIndex: "0", onClick: self.nameClicked, onKeyDown: self.nameKey, title: self.props.name}, 
 							self.props.name || self.placeholderName(self.props.playerId)
 						), 
 					
