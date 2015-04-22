@@ -1,5 +1,6 @@
 'use strict';
 
+var plumber = require('gulp-plumber');
 var htmlmin = require('gulp-htmlmin');
 var stylus = require('gulp-stylus');
 var small = require('small').gulp;
@@ -40,6 +41,7 @@ gulp.task('styles', function() {
 
 gulp.task('js', function() {
 	gulp.src(paths.js.all)
+		.pipe(plumber())
 		.pipe(react())
 		.pipe(small('index.js', {
 			globalModules: {

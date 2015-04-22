@@ -27,6 +27,7 @@
     "gulp": "^3.8.11",
     "gulp-htmlmin": "^1.1.1",
     "gulp-mocha": "^2.0.1",
+    "gulp-plumber": "^1.0.0",
     "gulp-react": "^3.0.1",
     "gulp-stylus": "^2.0.1",
     "gulp-wrap": "^0.11.0",
